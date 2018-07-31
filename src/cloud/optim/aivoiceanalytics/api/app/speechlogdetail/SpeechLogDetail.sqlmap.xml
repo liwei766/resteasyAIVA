@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Config 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--
+ * Copyright (C) 2017 OPTiM Corp. All Rights Reserved
+ * システム名：
+ * ファイル名：SpeechLogDetail.sqlmap.xml
+ * 概要：
+ *
+ * 修正履歴：
+ *   編集者		日付					概要
+ *
+-->
+<mapper namespace="cloud.optim.aivoiceanalytics.api.app.speechlogdetail.SpeechLogDetailMapper">
+
+	<!--
+		SpeechLogDetail エンティティのカラムマッピング
+	-->
+	<resultMap id="entityMap" type="cloud.optim.aivoiceanalytics.api.entity.SpeechLogDetail" >
+		<id property="speechLogDetailId" column="SPEECH_LOG_DETAIL_ID" />
+		<result property="updateDate" column="UPDATE_DATE" />
+		<result property="companyId" column="COMPANY_ID" />
+		<result property="speechLogId" column="SPEECH_LOG_ID" />
+		<result property="log" column="LOG" />
+		<result property="begin" column="BEGIN" />
+		<result property="end" column="END" />
+		<result property="voiceExistence" column="VOICE_EXISTENCE" />
+		<result property="createDate" column="CREATE_DATE" />
+		<result property="createUserId" column="CREATE_USER_ID" />
+		<result property="createUserName" column="CREATE_USER_NAME" />
+		<result property="updateUserId" column="UPDATE_USER_ID" />
+		<result property="updateUserName" column="UPDATE_USER_NAME" />
+		<result property="deleteDate" column="DELETE_DATE" />
+	</resultMap>
+
+	<!-- 音声解析ログIDによる検索なデータの検索 -->
+	<select id="getDetails" resultMap="entityMap">
+		SELECT
+			*
+		FROM
+			TBL_T_SPEECH_LOG_DETAIL speechLogDetail
+		WHERE
+			COMPANY_ID = #{companyId} AND
+			SPEECH_LOG_ID = #{speechLogId} AND
+			DELETE_DATE IS NULL
+	</select>
+
+	<select id="getDetailsByUser" resultMap="entityMap">
+		SELECT
+			speechLogDetail.*
+		FROM
+			TBL_T_SPEECH_LOG_DETAIL speechLogDetail
+		INNER JOIN TBL_T_SPEECH_LOG speechLog
+			ON speechLog.SPEECH_LOG_ID = speechLogDetail.SPEECH_LOG_ID
+			AND speechLog.COMPANY_ID = speechLogDetail.COMPANY_ID
+			AND speechLog.COMPANY_ID = #{companyId}
+			AND speechLog.USER_ID =#{userId}
+			AND speechLog.DELETE_DATE IS NULL
+		WHERE
+			speechLogDetail.COMPANY_ID = #{companyId} AND
+			speechLogDetail.SPEECH_LOG_ID = #{speechLogId} AND
+			speechLogDetail.DELETE_DATE IS NULL
+	</select>
+
+	<!-- 音声無しデータの検索 -->
+	<select id="searchNoVoice" resultMap="entityMap">
+		SELECT
+			*
+		FROM
+			TBL_T_SPEECH_LOG_DETAIL speechLogDetail
+		WHERE
+			COMPANY_ID = #{companyId} AND
+			SPEECH_LOG_ID = #{speechLogId} AND
+			BEGIN IS NOT NULL AND
+			END IS NOT NULL AND
+			VOICE_EXISTENCE = FALSE
+	</select>
+
+	<!-- 音声ありのデータの検索 -->
+	<select id="searchExistVoiceByUser" resultMap="entityMap">
+		SELECT
+			speechLogDetail.*
+		FROM
+			TBL_T_SPEECH_LOG_DETAIL speechLogDetail
+		INNER JOIN TBL_T_SPEECH_LOG speechLog
+			ON speechLog.SPEECH_LOG_ID = speechLogDetail.SPEECH_LOG_ID
+			AND speechLog.COMPANY_ID = speechLogDetail.COMPANY_ID
+			AND speechLog.USER_ID =#{userId}
+			AND speechLog.COMPANY_ID = #{companyId}
+			AND speechLog.DELETE_DATE IS NULL
+		WHERE
+			speechLogDetail.COMPANY_ID = #{companyId} AND
+			speechLogDetail.SPEECH_LOG_ID = #{speechLogId} AND
+			speechLogDetail.VOICE_EXISTENCE = TRUE AND
+			speechLogDetail.DELETE_DATE IS NULL
+		ORDER BY
+			speechLogDetail.SPEECH_LOG_DETAIL_ID ASC
+	</select>
+
+	<select id="searchExistVoiceByCompany" resultMap="entityMap">
+		SELECT
+			*
+		FROM
+			TBL_T_SPEECH_LOG_DETAIL speechLogDetail
+		WHERE
+			COMPANY_ID = #{companyId} AND
+			SPEECH_LOG_ID = #{speechLogId} AND
+			VOICE_EXISTENCE = TRUE AND
+			DELETE_DATE IS NULL
+		ORDER BY
+			SPEECH_LOG_DETAIL_ID ASC
+	</select>
+
+	<!-- 音声ありのデータの検索(論理削除も含む) -->
+	<select id="searchAllExistVoiceByCompany" resultMap="entityMap">
+		SELECT
+			*
+		FROM
+			TBL_T_SPEECH_LOG_DETAIL speechLogDetail
+		WHERE
+			COMPANY_ID = #{companyId} AND
+			SPEECH_LOG_ID = #{speechLogId} AND
+			VOICE_EXISTENCE = TRUE
+		ORDER BY
+			SPEECH_LOG_DETAIL_ID ASC
+	</select>
+
+	<!-- 音声有無フラグを無しに更新 -->
+	<update id="updateVoiceExistence">
+		UPDATE
+			TBL_T_SPEECH_LOG_DETAIL
+		SET
+			BEGIN = NULL,
+			END = NULL,
+			VOICE_EXISTENCE = FALSE
+		WHERE
+			SPEECH_LOG_DETAIL_ID = #{speechLogDetailId}
+	</update>
+
+	<!-- 音声解析ログIDに紐づく詳細ログを一括論理削除 -->
+	<update id="logicalDeleteAllSpeechLogDetailsByCompany">
+		UPDATE
+			TBL_T_SPEECH_LOG_DETAIL
+		SET
+			UPDATE_DATE = #{deleteDate},
+			DELETE_DATE = #{deleteDate},
+			UPDATE_USER_ID = #{updateUserId},
+			UPDATE_USER_NAME = #{updateUserName}
+		WHERE
+			SPEECH_LOG_ID = #{speechLogId}
+			AND COMPANY_ID = #{companyId}
+			AND DELETE_DATE IS NULL
+	</update>
+
+	<!--
+		音声解析ログIDに紐づく詳細ログを一括削除
+	-->
+	<delete id="deleteAllSpeechLogDetails">
+		DELETE
+		FROM
+			TBL_T_SPEECH_LOG_DETAIL
+		WHERE
+			SPEECH_LOG_ID = #{speechLogId}
+	</delete>
+
+</mapper>
+
+
+
+
+
+
+
+
+
+
+
+
+
+

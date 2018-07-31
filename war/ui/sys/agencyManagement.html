@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<!-- head -->
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport"
+	content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="description" content="Analyze Manager">
+<meta name="author" content="Optim">
+<link rel="shortcut icon" href="../img/favicon.png">
+<title>AI Voice Analytics</title>
+
+<!-- Main styles for this application -->
+<link href="../css/style.css" rel="stylesheet">
+<link href="../css/ccs.css" rel="stylesheet">
+
+</head>
+
+
+<body class="app footer-fixed">
+
+	<!-- modal-panel -->
+	<div id="dialog" class="modal align-middle fade bd-example-modal-lg"
+		tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel"
+		aria-hidden="true"></div>
+	<!-- /modal-panel -->
+
+	<!-- header -->
+	<header id="navBar"
+		class="app-header navbar d-flex justify-content-end ccs-navbar"></header>
+	<!-- /header -->
+
+	<!-- app-body -->
+	<div class="app-body overflow-y-hidden">
+
+		<!-- main -->
+		<main class="main"> <!-- container -->
+		<div class="container-fluid animated fadeIn h-100">
+			<div class="d-flex h-100">
+				<!-- list -->
+				<div class="col-lg-8 no-padding h-100">
+					<div
+						class="card border-left-0 h-100 ccs-agency-management-left-pane">
+						<div class="card-header d-flex justify-content-start h1-header">
+							<div class="h4 text-muted text-right mr-1 mb-0">
+								<i class="fa fa-group" aria-hidden="true"></i>
+							</div>
+							<div class="mr-auto p-2">代理店管理</div>
+
+							<div class="col-lg-6 no-padding">
+								<div class="input-group">
+									<input type="text" id="inputSearch"
+										class="form-control ccs-with-button w-50" maxlength="32"
+										placeholder="代理店企業ID検索" aria-label="Search for..."> <span
+										class="input-group-btn">
+										<button id="search" class="btn btn-primary mb-0" type="button">検索</button>
+									</span> <span class="input-group-btn ml-5">
+										<button type="submit" class="btn btn-primary mb-0"
+											type="button" id="dispRegist">新規登録</button>
+									</span>
+								</div>
+							</div>
+						</div>
+
+						<div class="row ccs-agency-management-warn-area"
+							id="searchMsgParent" hidden="hidden">
+							<div class="col-lg-12 h-100 bg-warning d-flex align-items-center">
+								<label id="searchMsg" class="text-center w-100"></label>
+							</div>
+						</div>
+
+						<div id="table-scroll" class="table-scroll ccs-list-table">
+							<div id="t1" class="scroll-wrap"></div>
+							<div class="inner-wrap t2 border-0">
+								<table id="main-table" class="main-table">
+									<thead>
+										<tr>
+											<th>#
+												<button type="button" class="btn-xs btn-link">
+													<i id="sortId" class="text-white fa fa-sort"></i>
+												</button>
+											</th>
+											<th class="min-w-180">代理店企業ID
+												<button type="button" class="btn-xs btn-link">
+													<i id="sortAgencyCompanyId" class="text-white fa fa-sort"></i>
+												</button>
+											</th>
+											<th class="min-w-120">更新日時
+												<button type="button" class="btn-xs btn-link">
+													<i id="sortTime" class="text-white fa fa-sort"></i>
+												</button>
+											</th>
+										</tr>
+									</thead>
+									<tbody>
+									</tbody>
+								</table>
+							</div>
+							<!-- /t2 -->
+							<!-- </div> <!-- /t1 -->
+						</div>
+						<!-- /table-scroll -->
+
+					</div>
+					<!-- /card -->
+				</div>
+				<!-- /list -->
+				<!-- answer -->
+
+				<div
+					class="col-lg-4 no-padding h-100 ccs-agency-management-right-pane">
+					<div class="card border-left-0 border-right-0 card-height">
+						<div class="card-header h2-header">
+							<div class="row d-flex h-100 align-items-center">
+								<span class="col-lg-3" id="dispModeNameRegist">新規登録</span> <span
+									class="col-lg-3" id="dispModeNameEdit" hidden="hidden">編集</span>
+								<span class="col-lg-9 text-right"> <strong><label
+										id="dispNo"></label></strong>
+								</span>
+							</div>
+						</div>
+						<!-- /card-header -->
+
+
+						<div id="editParent" class="card-block">
+							<form>
+								<div class="row">
+									<div class="col-lg-12">
+										<!-- AgencyCompanyId -->
+										<div class="form-group-modal w-100">
+											<div class="row">
+												<div class="col-lg-12">
+													<span class="badge-small badge-danger text-white">必須</span>
+													<label for="inputAgencyCompanyId">代理店企業ID</label> <input
+														type="text" class="form-control w-100"
+														id="inputAgencyCompanyId" maxlength="32">
+												</div>
+											</div>
+										</div>
+										<!-- /AgencyCompanyId -->
+										<div class="align-bottom align-baseline my-4">
+											<button type="button" id="regist"
+												class="btn btn-primary btn-lg btn-block no-margin align-bottom align-baseline">登録</button>
+										</div>
+										<div class="align-bottom align-baseline my-4">
+											<button type="button" id="delete"
+												class="btn btn-danger btn-lg btn-block no-margin align-bottom align-baseline"
+												hidden="hidden">削除</button>
+										</div>
+									</div>
+								</div>
+							</form>
+
+						</div>
+						<!-- /editParent /card-block -->
+					</div>
+					<!-- /card-body -->
+				</div>
+				<!-- /answer -->
+				<!-- /container -->
+		</main>
+		<!-- /main -->
+	</div>
+	<!-- /app-body -->
+
+	<!-- footer-->
+	<footer class="app-footer">
+		<!-- <span class="float-right">© 2017 Optim</span> -->
+	</footer>
+
+	<!-- /footer -->
+	<!-- script -->
+	<!-- Bootstrap and necessary plugins -->
+	<script src="../js/libs/jquery.min.js"></script>
+	<script src="../js/libs/tether.min.js"></script>
+	<script src="../js/libs/bootstrap.min.js"></script>
+	<script src="../js/libs/pace.min.js"></script>
+
+	<!-- GenesisUI main scripts -->
+	<script src="../js/main.js"></script>
+
+	<!-- aivoiceanalytics Application -->
+
+	<script src="../app/common/ccs.js"></script>
+	<script src="../app/common/util.js"></script>
+	<script src="../app/common/prop.js"></script>
+
+	<script src="../app/common/view.js"></script>
+	<script src="../app/common/api.js"></script>
+	<script src="../app/common/auth.js"></script>
+	<script src="../app/common/user.js"></script>
+
+	<script src="../app/layout.js"></script>
+	<script src="../app/agencyManagement.js"></script>
+
+	<!-- /script -->
+
+</body>
+
+</html>

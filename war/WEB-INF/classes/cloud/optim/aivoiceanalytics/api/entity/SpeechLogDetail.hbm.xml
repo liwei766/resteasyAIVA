@@ -1,0 +1,585 @@
+<!DOCTYPE hibernate-mapping PUBLIC
+	'-//Hibernate/Hibernate Mapping DTD 3.0//EN'
+	'http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd'>
+<!--
+ * Copyright (C) 2017 OPTiM Corp. All Rights Reserved
+ * システム名：
+ * ファイル名：SpeechLogDetail.hbm.xml
+-->
+
+<hibernate-mapping auto-import='false'>
+	<class
+		name				= 'cloud.optim.aivoiceanalytics.api.entity.SpeechLogDetail'
+		table				= 'TBL_T_SPEECH_LOG_DETAIL'
+		mutable				= 'true'
+		dynamic-update		= 'false'
+		dynamic-insert		= 'false'
+		select-before-update= 'false'
+		batch-size			= '1'
+		optimistic-lock		= 'version'
+		lazy				= 'false'
+	>
+
+		<meta attribute='project-id'></meta>
+		<meta attribute='class-description'></meta>
+		<meta attribute='pagepath'>/ui</meta>
+		<meta attribute='template'>template/basic304</meta>
+		<meta attribute='generator-version'>2.0.7</meta>
+
+		<meta attribute='class-code'>
+	/** serialVersionUID  */
+	private static final long serialVersionUID = 1L;
+		</meta>
+
+		<comment>音声解析ログ詳細</comment>
+
+
+
+
+		<!-- プライマリーキー設定  -->
+		<id
+			name			= 'speechLogDetailId'
+			type			= 'java.lang.Long'
+			access			= 'property'
+		>
+			<meta attribute='field-description'>音声解析ログ詳細 ID</meta>
+			<meta attribute='field-tooltip'></meta>
+			<meta attribute='use-in-tostring'>true</meta>
+			<meta attribute='use-in-equals'>true</meta>
+			<meta attribute='csv-import'>false</meta>
+			<meta attribute='csv-export'>false</meta>
+			<meta attribute='search-criteria'>search</meta>
+			<meta attribute='result-list'>sortable</meta>
+			<meta attribute='result-list-css'>text-align:right;</meta>
+			<meta attribute='property-css'></meta>
+			<meta attribute='property-refer-display'>enable</meta>
+			<meta attribute='property-insertable'>true</meta>
+			<meta attribute='property-updateable'>false</meta>
+			<meta attribute='property-insert-display'>none</meta>
+			<meta attribute='property-update-display'>disable</meta>
+			<meta attribute='control-type'>[text]</meta>
+			<meta attribute='control-type-detail'></meta>
+			<meta attribute='control-validation'>Numeric</meta>
+			<meta attribute='split'></meta>
+
+			<column name	= 'SPEECH_LOG_DETAIL_ID'
+					length='19'
+					not-null= 'true'
+			>
+				<comment>レコードの主キー</comment>
+			</column>
+			<generator class='native'/>
+		</id>
+
+
+
+		<!-- バージョン設定  -->
+		<version
+			name='updateDate'
+			type="timestamp"
+			access='property'
+			unsaved-value='undefined'
+		>
+			<meta attribute='field-description'>更新日時</meta>
+			<meta attribute='field-tooltip'></meta>
+			<meta attribute='use-in-tostring'>true</meta>
+			<meta attribute='use-in-equals'>true</meta>
+			<meta attribute='csv-import'>false</meta>
+			<meta attribute='csv-export'>false</meta>
+			<meta attribute='search-criteria'></meta>
+			<meta attribute='result-list'></meta>
+			<meta attribute='result-list-css'></meta>
+			<meta attribute='property-css'></meta>
+			<meta attribute='property-refer-display'>none</meta>
+			<meta attribute='property-insertable'>true</meta>
+			<meta attribute='property-updateable'>true</meta>
+			<meta attribute='property-insert-display'>none</meta>
+			<meta attribute='property-update-display'>disable</meta>
+			<meta attribute='control-type'>[calendar]</meta>
+			<meta attribute='control-type-detail'>yyyy/MM/dd HH:mm:ss.SSS</meta>
+			<meta attribute='control-validation'></meta>
+			<meta attribute='split'></meta>
+			<column name	= 'UPDATE_DATE'
+				length='0'
+			>
+				<comment></comment>
+			</column>
+		</version>
+
+
+
+
+
+		<property
+			name='companyId'
+			type='java.lang.String'
+			update='false'
+			insert='true'
+			access='property'
+		>
+			<meta attribute='field-description'>企業 ID</meta>
+			<meta attribute='field-tooltip'></meta>
+			<meta attribute='use-in-tostring'>true</meta>
+			<meta attribute='use-in-equals'>true</meta>
+			<meta attribute='csv-import'>false</meta>
+			<meta attribute='csv-export'>false</meta>
+			<meta attribute='search-criteria'>search</meta>
+			<meta attribute='result-list'>sortable</meta>
+			<meta attribute='result-list-css'></meta>
+			<meta attribute='property-css'></meta>
+			<meta attribute='property-refer-display'>enable</meta>
+			<meta attribute='property-insertable'>true</meta>
+			<meta attribute='property-updateable'>false</meta>
+			<meta attribute='property-insert-display'>none</meta>
+			<meta attribute='property-update-display'>none</meta>
+			<meta attribute='control-type'>[text]</meta>
+			<meta attribute='control-type-detail'></meta>
+			<meta attribute='control-validation'></meta>
+			<meta attribute='unique-key'></meta>
+			<meta attribute='split'></meta>
+			<column
+				name='COMPANY_ID'
+				length='32'
+				not-null='true'
+				unique='false'
+				index='IDX_SPEECHLOGDTL_COMPANY'
+			>
+				<comment></comment>
+			</column>
+		</property>
+
+
+		<property
+			name='speechLogId'
+			type='java.lang.Long'
+			update='false'
+			insert='true'
+			access='property'
+		>
+			<meta attribute='field-description'>音声解析ログ ID</meta>
+			<meta attribute='field-tooltip'></meta>
+			<meta attribute='use-in-tostring'>true</meta>
+			<meta attribute='use-in-equals'>true</meta>
+			<meta attribute='csv-import'>false</meta>
+			<meta attribute='csv-export'>false</meta>
+			<meta attribute='search-criteria'>search</meta>
+			<meta attribute='result-list'>sortable</meta>
+			<meta attribute='result-list-css'></meta>
+			<meta attribute='property-css'></meta>
+			<meta attribute='property-refer-display'>enable</meta>
+			<meta attribute='property-insertable'>true</meta>
+			<meta attribute='property-updateable'>false</meta>
+			<meta attribute='property-insert-display'>none</meta>
+			<meta attribute='property-update-display'>disable</meta>
+			<meta attribute='control-type'></meta>
+			<meta attribute='control-type-detail'></meta>
+			<meta attribute='control-validation'></meta>
+			<meta attribute='unique-key'></meta>
+			<meta attribute='split'></meta>
+			<column
+				name='SPEECH_LOG_ID'
+				length='19'
+				not-null='true'
+				unique='false'
+				index=''
+			>
+				<comment></comment>
+			</column>
+		</property>
+
+
+		<property
+			name='log'
+			type='java.lang.String'
+			update='true'
+			insert='true'
+			access='property'
+		>
+			<meta attribute='field-description'>内容</meta>
+			<meta attribute='field-tooltip'></meta>
+			<meta attribute='use-in-tostring'>true</meta>
+			<meta attribute='use-in-equals'>true</meta>
+			<meta attribute='csv-import'>false</meta>
+			<meta attribute='csv-export'>false</meta>
+			<meta attribute='search-criteria'>search</meta>
+			<meta attribute='result-list'>sortable</meta>
+			<meta attribute='result-list-css'></meta>
+			<meta attribute='property-css'></meta>
+			<meta attribute='property-refer-display'>enable</meta>
+			<meta attribute='property-insertable'>true</meta>
+			<meta attribute='property-updateable'>true</meta>
+			<meta attribute='property-insert-display'>enable</meta>
+			<meta attribute='property-update-display'>enable</meta>
+			<meta attribute='control-type'>[textarea]</meta>
+			<meta attribute='control-type-detail'></meta>
+			<meta attribute='control-validation'></meta>
+			<meta attribute='unique-key'></meta>
+			<meta attribute='split'></meta>
+			<column
+				name='LOG'
+				length='2147483647'
+				not-null='true'
+				unique='false'
+				index=''
+			>
+				<comment>LONGTEXT 使用</comment>
+			</column>
+		</property>
+
+
+		<property
+			name='begin'
+			type='java.lang.Integer'
+			update='false'
+			insert='true'
+			access='property'
+		>
+			<meta attribute='field-description'>開始時間</meta>
+			<meta attribute='field-tooltip'></meta>
+			<meta attribute='use-in-tostring'>true</meta>
+			<meta attribute='use-in-equals'>true</meta>
+			<meta attribute='csv-import'>false</meta>
+			<meta attribute='csv-export'>false</meta>
+			<meta attribute='search-criteria'>search</meta>
+			<meta attribute='result-list'>sortable</meta>
+			<meta attribute='result-list-css'></meta>
+			<meta attribute='property-css'></meta>
+			<meta attribute='property-refer-display'>enable</meta>
+			<meta attribute='property-insertable'>true</meta>
+			<meta attribute='property-updateable'>false</meta>
+			<meta attribute='property-insert-display'>enable</meta>
+			<meta attribute='property-update-display'>disable</meta>
+			<meta attribute='control-type'>[text]</meta>
+			<meta attribute='control-type-detail'></meta>
+			<meta attribute='control-validation'></meta>
+			<meta attribute='unique-key'></meta>
+			<meta attribute='split'></meta>
+			<column
+				name='BEGIN'
+				length='10'
+				not-null='false'
+				unique='false'
+				index=''
+			>
+				<comment>ミリ秒</comment>
+			</column>
+		</property>
+
+
+		<property
+			name='end'
+			type='java.lang.Integer'
+			update='false'
+			insert='true'
+			access='property'
+		>
+			<meta attribute='field-description'>終了時間</meta>
+			<meta attribute='field-tooltip'></meta>
+			<meta attribute='use-in-tostring'>true</meta>
+			<meta attribute='use-in-equals'>true</meta>
+			<meta attribute='csv-import'>false</meta>
+			<meta attribute='csv-export'>false</meta>
+			<meta attribute='search-criteria'>search</meta>
+			<meta attribute='result-list'>sortable</meta>
+			<meta attribute='result-list-css'></meta>
+			<meta attribute='property-css'></meta>
+			<meta attribute='property-refer-display'>enable</meta>
+			<meta attribute='property-insertable'>true</meta>
+			<meta attribute='property-updateable'>false</meta>
+			<meta attribute='property-insert-display'>enable</meta>
+			<meta attribute='property-update-display'>disable</meta>
+			<meta attribute='control-type'>[text]</meta>
+			<meta attribute='control-type-detail'></meta>
+			<meta attribute='control-validation'></meta>
+			<meta attribute='unique-key'></meta>
+			<meta attribute='split'></meta>
+			<column
+				name='END'
+				length='10'
+				not-null='false'
+				unique='false'
+				index=''
+			>
+				<comment>ミリ秒</comment>
+			</column>
+		</property>
+
+
+		<property
+			name='voiceExistence'
+			type='java.lang.Boolean'
+			update='true'
+			insert='true'
+			access='property'
+		>
+			<meta attribute='field-description'>音声有無フラグ</meta>
+			<meta attribute='field-tooltip'></meta>
+			<meta attribute='use-in-tostring'>true</meta>
+			<meta attribute='use-in-equals'>true</meta>
+			<meta attribute='csv-import'>false</meta>
+			<meta attribute='csv-export'>false</meta>
+			<meta attribute='search-criteria'>search</meta>
+			<meta attribute='result-list'>list</meta>
+			<meta attribute='result-list-css'></meta>
+			<meta attribute='property-css'></meta>
+			<meta attribute='property-refer-display'>enable</meta>
+			<meta attribute='property-insertable'>true</meta>
+			<meta attribute='property-updateable'>true</meta>
+			<meta attribute='property-insert-display'>enable</meta>
+			<meta attribute='property-update-display'>enable</meta>
+			<meta attribute='control-type'></meta>
+			<meta attribute='control-type-detail'></meta>
+			<meta attribute='control-validation'></meta>
+			<meta attribute='unique-key'></meta>
+			<meta attribute='split'></meta>
+			<column
+				name='VOICE_EXISTENCE'
+				length='1'
+				not-null='true'
+				unique='false'
+				index=''
+			>
+				<comment>false：無、true：有</comment>
+			</column>
+		</property>
+
+
+		<property
+			name='createDate'
+			type='java.util.Date'
+			update='false'
+			insert='true'
+			access='property'
+		>
+			<meta attribute='field-description'>作成日時</meta>
+			<meta attribute='field-tooltip'></meta>
+			<meta attribute='use-in-tostring'>true</meta>
+			<meta attribute='use-in-equals'>true</meta>
+			<meta attribute='csv-import'>false</meta>
+			<meta attribute='csv-export'>false</meta>
+			<meta attribute='search-criteria'></meta>
+			<meta attribute='result-list'></meta>
+			<meta attribute='result-list-css'></meta>
+			<meta attribute='property-css'></meta>
+			<meta attribute='property-refer-display'>enable</meta>
+			<meta attribute='property-insertable'>true</meta>
+			<meta attribute='property-updateable'>false</meta>
+			<meta attribute='property-insert-display'>none</meta>
+			<meta attribute='property-update-display'>disable</meta>
+			<meta attribute='control-type'>[calendar]</meta>
+			<meta attribute='control-type-detail'>yyyy/MM/dd HH:MM</meta>
+			<meta attribute='control-validation'></meta>
+			<meta attribute='unique-key'></meta>
+			<meta attribute='split'>true</meta>
+			<column
+				name='CREATE_DATE'
+				length='7'
+				not-null='true'
+				unique='false'
+				index=''
+			>
+				<comment></comment>
+			</column>
+		</property>
+
+
+		<property
+			name='createUserId'
+			type='java.lang.String'
+			update='false'
+			insert='true'
+			access='property'
+		>
+			<meta attribute='field-description'>作成ユーザ ID</meta>
+			<meta attribute='field-tooltip'></meta>
+			<meta attribute='use-in-tostring'>true</meta>
+			<meta attribute='use-in-equals'>true</meta>
+			<meta attribute='csv-import'>false</meta>
+			<meta attribute='csv-export'>false</meta>
+			<meta attribute='search-criteria'></meta>
+			<meta attribute='result-list'></meta>
+			<meta attribute='result-list-css'></meta>
+			<meta attribute='property-css'></meta>
+			<meta attribute='property-refer-display'>enable</meta>
+			<meta attribute='property-insertable'>true</meta>
+			<meta attribute='property-updateable'>false</meta>
+			<meta attribute='property-insert-display'>none</meta>
+			<meta attribute='property-update-display'>disable</meta>
+			<meta attribute='control-type'>[text]</meta>
+			<meta attribute='control-type-detail'>createUser</meta>
+			<meta attribute='control-validation'></meta>
+			<meta attribute='unique-key'></meta>
+			<meta attribute='split'></meta>
+			<column
+				name='CREATE_USER_ID'
+				length='32'
+				not-null='true'
+				unique='false'
+				index=''
+			>
+				<comment></comment>
+			</column>
+		</property>
+
+
+		<property
+			name='createUserName'
+			type='java.lang.String'
+			update='false'
+			insert='true'
+			access='property'
+		>
+			<meta attribute='field-description'>作成ユーザ名</meta>
+			<meta attribute='field-tooltip'></meta>
+			<meta attribute='use-in-tostring'>false</meta>
+			<meta attribute='use-in-equals'>true</meta>
+			<meta attribute='csv-import'>false</meta>
+			<meta attribute='csv-export'>false</meta>
+			<meta attribute='search-criteria'></meta>
+			<meta attribute='result-list'></meta>
+			<meta attribute='result-list-css'></meta>
+			<meta attribute='property-css'></meta>
+			<meta attribute='property-refer-display'>enable</meta>
+			<meta attribute='property-insertable'>true</meta>
+			<meta attribute='property-updateable'>false</meta>
+			<meta attribute='property-insert-display'>none</meta>
+			<meta attribute='property-update-display'>disable</meta>
+			<meta attribute='control-type'>[text]</meta>
+			<meta attribute='control-type-detail'></meta>
+			<meta attribute='control-validation'></meta>
+			<meta attribute='unique-key'></meta>
+			<meta attribute='split'></meta>
+			<column
+				name='CREATE_USER_NAME'
+				length='100'
+				not-null='true'
+				unique='false'
+				index=''
+			>
+				<comment></comment>
+			</column>
+		</property>
+
+
+		<property
+			name='updateUserId'
+			type='java.lang.String'
+			update='true'
+			insert='true'
+			access='property'
+		>
+			<meta attribute='field-description'>更新ユーザ ID</meta>
+			<meta attribute='field-tooltip'></meta>
+			<meta attribute='use-in-tostring'>true</meta>
+			<meta attribute='use-in-equals'>true</meta>
+			<meta attribute='csv-import'>false</meta>
+			<meta attribute='csv-export'>false</meta>
+			<meta attribute='search-criteria'></meta>
+			<meta attribute='result-list'></meta>
+			<meta attribute='result-list-css'></meta>
+			<meta attribute='property-css'></meta>
+			<meta attribute='property-refer-display'>enable</meta>
+			<meta attribute='property-insertable'>true</meta>
+			<meta attribute='property-updateable'>true</meta>
+			<meta attribute='property-insert-display'>none</meta>
+			<meta attribute='property-update-display'>disable</meta>
+			<meta attribute='control-type'>[text]</meta>
+			<meta attribute='control-type-detail'>updateUser</meta>
+			<meta attribute='control-validation'></meta>
+			<meta attribute='unique-key'></meta>
+			<meta attribute='split'></meta>
+			<column
+				name='UPDATE_USER_ID'
+				length='32'
+				not-null='true'
+				unique='false'
+				index=''
+			>
+				<comment></comment>
+			</column>
+		</property>
+
+
+		<property
+			name='updateUserName'
+			type='java.lang.String'
+			update='true'
+			insert='true'
+			access='property'
+		>
+			<meta attribute='field-description'>更新ユーザ名</meta>
+			<meta attribute='field-tooltip'></meta>
+			<meta attribute='use-in-tostring'>false</meta>
+			<meta attribute='use-in-equals'>true</meta>
+			<meta attribute='csv-import'>false</meta>
+			<meta attribute='csv-export'>false</meta>
+			<meta attribute='search-criteria'></meta>
+			<meta attribute='result-list'></meta>
+			<meta attribute='result-list-css'></meta>
+			<meta attribute='property-css'></meta>
+			<meta attribute='property-refer-display'>enable</meta>
+			<meta attribute='property-insertable'>true</meta>
+			<meta attribute='property-updateable'>true</meta>
+			<meta attribute='property-insert-display'>none</meta>
+			<meta attribute='property-update-display'>disable</meta>
+			<meta attribute='control-type'>[text]</meta>
+			<meta attribute='control-type-detail'></meta>
+			<meta attribute='control-validation'></meta>
+			<meta attribute='unique-key'></meta>
+			<meta attribute='split'></meta>
+			<column
+				name='UPDATE_USER_NAME'
+				length='100'
+				not-null='true'
+				unique='false'
+				index=''
+			>
+				<comment></comment>
+			</column>
+		</property>
+
+
+		<property
+			name='deleteDate'
+			type='java.util.Date'
+			update='true'
+			insert='true'
+			access='property'
+		>
+			<meta attribute='field-description'>削除日時</meta>
+			<meta attribute='field-tooltip'></meta>
+			<meta attribute='use-in-tostring'>false</meta>
+			<meta attribute='use-in-equals'>true</meta>
+			<meta attribute='csv-import'>false</meta>
+			<meta attribute='csv-export'>false</meta>
+			<meta attribute='search-criteria'></meta>
+			<meta attribute='result-list'></meta>
+			<meta attribute='result-list-css'></meta>
+			<meta attribute='property-css'></meta>
+			<meta attribute='property-refer-display'>enable</meta>
+			<meta attribute='property-insertable'>true</meta>
+			<meta attribute='property-updateable'>true</meta>
+			<meta attribute='property-insert-display'>none</meta>
+			<meta attribute='property-update-display'>disable</meta>
+			<meta attribute='control-type'>[calendar]</meta>
+			<meta attribute='control-type-detail'>yyyy/MM/dd HH:MM</meta>
+			<meta attribute='control-validation'></meta>
+			<meta attribute='unique-key'></meta>
+			<meta attribute='split'></meta>
+			<column
+				name='DELETE_DATE'
+				length='7'
+				not-null='false'
+				unique='false'
+				index=''
+			>
+				<comment></comment>
+			</column>
+		</property>
+
+
+
+
+	</class>
+
+</hibernate-mapping>

@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
+
+<!-- ===================================================================== -->
+<!-- PRODUCT                                                               -->
+<!--  Log4j Configuration                                                  -->
+<!-- ===================================================================== -->
+
+<log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/" debug="false">
+
+
+
+
+
+	<!-- ================================= -->
+	<!-- Preserve messages in a local file -->
+	<!-- ================================= -->
+
+	<!-- A time/date based rolling appender -->
+
+	<appender name="FILE" class="cloud.optim.aivoiceanalytics.core.common.log4j.DailySizeRollingFileAppender">
+		<param name="File" value="/usr/aivoiceanalytics/logs/AIVoiceAnalytics.log"/>
+		<param name="Append" value="true"/>
+		<param name="DatePattern" value="'.'yyyy-MM-dd"/>
+		<param name="encoding" value="UTF-8"/>
+		<param name="maxBackupUnit" value="30"/>
+<!--
+		<param name="maxFileSize" value="1048576"/>
+		<param name="maxBackupUnit" value="10"/>
+-->
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="[%d] [%-5p] [%t] [%X{ipAddress};%X{userId};%X{sessionId}] [%c] - %m%n"/>
+		</layout>
+	</appender>
+
+
+	<!-- ============================== -->
+	<!-- Append messages to the console -->
+	<!-- ============================== -->
+
+	<appender name="CONSOLE" class="org.apache.log4j.ConsoleAppender">
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="[%d] [%-5p] [%t] [%X{ipAddress};%X{userId};%X{sessionId}] [%c] - %m%n"/>
+		</layout>
+	</appender>
+
+
+	<!-- ====================== -->
+	<!-- More Appender examples -->
+	<!-- ====================== -->
+
+
+	<!-- ================ -->
+	<!-- Limit categories -->
+	<!-- ================ -->
+
+	<!-- ライブラリンログ -->
+	<logger name="org">
+		<level value="ERROR"/>
+	</logger>
+
+	<logger name="org.jboss.resteasy">
+		<level value="WARN"/>
+	</logger>
+
+	<!-- ユーザアプリケーションログ -->
+	<logger name="cloud.optim.aivoiceanalytics">
+		<level value="INFO" />
+	</logger>
+
+
+	<!-- ======================= -->
+	<!-- Setup the Root category -->
+	<!-- ======================= -->
+
+	<root>
+		<priority value="INFO"/>
+		<appender-ref ref="FILE"/>
+	</root>
+
+
+
+
+
+	<!--
+		Faceletsログ出力の制限について.
+		Faceletsは、Java標準Loggerを使用するため.
+		{JAVA_HOME}/jre/lib/logging.propertiesファイルの最後に.
+		以下を追記して制限してください.
+
+
+		# Facelet用ログ制御.
+		facelets.level = SEVERE
+
+		facelets.compiler.level = SEVERE
+		facelets.tag.component.level = SEVERE
+		facelets.viewhandler.level = SEVERE
+	-->
+
+</log4j:configuration>

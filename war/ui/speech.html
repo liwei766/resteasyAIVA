@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<!-- head -->
+<head>
+<meta charset="utf-8">
+<title>AI Voice Analytics</title>
+<!-- <meta charset="utf-8"> -->
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport"
+	content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="description" content="Analyze Manager">
+<meta name="author" content="Optim">
+<link rel="shortcut icon" href="img/favicon.png">
+
+<!-- Icons -->
+<!-- 		<link href="./css/font-awesome.min.css" type="text/css" rel="stylesheet"> -->
+<!-- 		<link href="./css/simple-line-icons.css" type="text/css" rel="stylesheet"> -->
+
+<!-- Main styles for this application -->
+<link href="./css/style.css" rel="stylesheet">
+<link rel="stylesheet" type="text/css" href="./css/main.css" />
+<link href="./css/ccs.css" rel="stylesheet">
+</head>
+
+<!-- /head -->
+
+<body class="app speech">
+
+    <!-- loading-spinner -->
+    <div id="loading-bar-spinner">
+        <div class="spinner-icon"></div>
+    </div>
+    <!-- /loading-spinner -->
+
+	<!-- modal-panel -->
+	<div class="modal align-middle fade bd-example-modal-lg" id="diaLogBox"
+		tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel"
+		aria-hidden="true"></div>
+	<!-- /modal-panel -->
+
+	<!-- 一時停止ダイアログ -->
+    <div id="pauseSpeechDialog" class="modal align-middle fade bd-example-modal-lg"
+     tabindex="-1" role="opdialog" aria-labelledby="mySmallModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">音声解析一時停止</h5>
+          </div>
+          <div class="modal-body">
+            <p class="text-error">音声解析は一時停止中です。</p>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn1-button btn btn-primary" aria-label="Close">再開</button>
+            <button type="button" class="btn2-button btn btn-primary" aria-label="Close">終了</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- /一時停止ダイアログ -->
+
+	<!-- header -->
+	<header id="navBar" class="app-header navbar d-flex justify-content-end ccs-navbar">
+	</header>
+	<!-- /header -->
+
+	<!-- app-body -->
+	<div class="app-body">
+		<!-- main -->
+		<main class="main">
+		<div class="operation h-100">
+			<div class="container-fluid h-100">
+
+				<div class="card h-100">
+
+					<!-- Card header -->
+					<div class="card-header d-flex justify-content-start h1-header">
+						<div class="h4 text-muted text-right mr-1 mb-0">
+							<i class="fa fa-microphone" aria-hidden="true"></i>
+						</div>
+						<div class="p-2">音声解析</div>
+					</div>
+					<!-- Card header -->
+
+					<!-- Card block -->
+					<div class="card-block">
+						<!-- upper -->
+						<div class="container-upper">
+							<div class="row">
+								<div class="col-lg-7">
+									<div id="switch-mode">
+										<div class="text-title d-flex align-items-center mb-2">
+											<div class="faq-container">
+												<b id="switch-mode-1" class="targets"></b> <b
+													id="switch-mode-2" class="targets"></b>
+												<div class="switch-mode">
+													<a href="#switch-mode-1"
+														class="switch--button button--group-1">音声ファイル入力</a> <a
+														href="#switch-mode-2"
+														class="switch--button button--group-2">マイク入力</a>
+
+													<div class="switch-content mt-3">
+														<ul class="switch-mode-list list--group-1">
+															<li class="faq--item">
+																<!-- Input_Audio-file -->
+																<div class="row">
+																	<div
+																		class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+																		<div
+																			class="form-group d-flex justify-content-start align-items-center">
+																			<div class="form-group">
+																				<input type="file" class="form-control-file"  id="file_select" accept=".wav,.WAV,.mp3,.MP3">
+																			</div>
+																			<button
+																				class="btn-play btn btn-primary badge-pill ml-auto"
+																				id="startFileAnalyze">解析開始</button>
+																		</div>
+																	</div>
+																</div>
+															</li>
+														</ul>
+														<ul class="switch-mode-list list--group-2">
+															<li class="faq--item">
+																<!-- Input_Microphone -->
+																<div class="row">
+																	<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+																		<div
+																			class="form-group d-flex justify-content-start align-items-center">
+																			<!-- <div class="title mr-3">マイク入力</div> -->
+																			<button class="btn-play btn btn-primary badge-pill" id="startSpeech">解析開始</button>
+																			<button class="btn-play btn btn-danger badge-pill" id="endSpeech" hidden="hidden" >解析終了</button>
+																			<div id="speechStatus" class="d-flex justify-content-center">
+																				<div id="speech" hidden="hidden" class="badge badge-default text-error font-weight-bold mb-0">解析中</div>
+																				<div id="starting" hidden="hidden" class="badge badge-default text-error font-weight-bold mb-0">準備中</div>
+																				<div id="ending"   hidden="hidden" class="badge badge-default text-error font-weight-bold mb-0">終了中</div>
+																			</div>
+																			<button id="pauseSpeech" class="btn-play btn btn-primary badge-pill invisible">一時停止</button>
+																		</div>
+																	</div>
+
+																</div>
+															</li>
+														</ul>
+													</div>
+
+												</div>
+											</div>
+										</div>
+
+									</div>
+								</div>
+
+
+							</div>
+
+						</div>
+
+						<!-- ファイル解析名 -->
+						<div align="right">
+							<label id="fileName"> </label>
+						</div>
+
+						<div id="dispLog"
+							class="form-control form-control_edit noresize py-4 ccs-edit-log card border-top-0 border-left-0 border-bottom-0 border-right-0">
+							<form></form>
+						</div>
+
+						<div
+							class="card-block d-flex align-items-center justify-content-end">
+							<div class="row">
+
+								<button id="exportFile" class="btn btn-primary my-0 ml-auto">ファイル出力</button>
+								<button id="update" class="btn btn-primary my-0 ml-3">更新</button>
+
+							</div>
+						</div>
+
+					</div>
+					<!-- /Card block -->
+
+					<!-- Card footer -->
+					<div class="card-footer d-flex align-items-center">
+						<span class="text-title mr-4">利用時間</span> <span
+							class="h4 time-stamp mr-auto" id="countClock">00:00:00</span>
+
+						<button class="btn-play btn  badge-pill mr-4 rennzoku" id="continuousPlay">
+							<i class="fa fa-play" aria-hidden="true"></i>
+						</button>
+						<button class="btn-play btn badge-pill stop" id="stopPlay">
+							<i class="fa fa-stop" aria-hidden="true"></i>
+						</button>
+
+					</div>
+					<!-- /Card footer -->
+				</div>
+			</div>
+		</div>
+
+		<!-- /chat --> </main>
+
+	</div>
+	<!-- /app-body -->
+
+
+	<script src="js/libs/jquery.min.js"></script>
+	<script src="js/libs/tether.min.js"></script>
+	<script src="js/libs/bootstrap.min.js"></script>
+	<script src="app/lib/optim/mic.js"></script>
+	<script src="app/lib/optim/jszip.min.js"></script>
+	<script src="app/lib/optim/recorder.js"></script>
+	<script src="app/lib/optim/analyze_result_manager.js"></script>
+
+	<script src="app/common/ccs.js"></script>
+	<script src="app/common/util.js"></script>
+	<script src="app/common/prop.js"></script>
+	<script src="app/common/view.js"></script>
+	<script src="app/common/api.js"></script>
+	<script src="app/common/auth.js"></script>
+	<script src="app/common/user.js"></script>
+
+	<script src="app/layout.js"></script>
+	<script src="app/speech.js"></script>
+
+	<div id="overlay">
+		<div id="contents">
+			<span id="progressMsg" class="align-left">音声ファイル解析中</span>&nbsp;&nbsp;<span id="progressRate" class="align-right float-right">0%</span>
+			<div class="progress progress-xs my-1">
+				<div id="progressbar" class="progress-bar bg-success"></div>
+			</div>
+		</div>
+	</div>
+
+</body>
+</html>
+
+

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Config 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--
+ * Copyright (C) 2017 OPTiM Corp. All Rights Reserved
+ * システム名：
+ * ファイル名：VoiceEncodeQueue.sqlmap.xml
+ * 概要：
+ *
+ * 修正履歴：
+ *   編集者		日付					概要
+ *
+-->
+<mapper namespace="cloud.optim.aivoiceanalytics.job.voiceencode.VoiceEncodeQueueMapper">
+
+	<!--
+		VoiceEncodeQueue エンティティのカラムマッピング
+	-->
+	<resultMap id="entityMap" type="cloud.optim.aivoiceanalytics.api.entity.VoiceEncodeQueue" >
+		<id property="voiceEncodeQueueId" column="VOICE_ENCODE_QUEUE_ID" />
+		<result property="updateDate" column="UPDATE_DATE" />
+		<result property="companyId" column="COMPANY_ID" />
+		<result property="callLogId" column="CALL_LOG_ID" />
+		<result property="callLogDetailId" column="CALL_LOG_DETAIL_ID" />
+		<result property="createDate" column="CREATE_DATE" />
+		<result property="createUserId" column="CREATE_USER_ID" />
+		<result property="createUserName" column="CREATE_USER_NAME" />
+	</resultMap>
+
+	<!--
+		削除対象データ検索
+	-->
+	<select id="search" resultMap="entityMap">
+		SELECT
+			*
+		FROM
+			TBL_T_VOICE_ENCODE_QUEUE
+		ORDER BY
+			VOICE_ENCODE_QUEUE_ID ASC
+		LIMIT
+			#{maxResult}
+		OFFSET
+			#{offset}
+	</select>
+</mapper>
+

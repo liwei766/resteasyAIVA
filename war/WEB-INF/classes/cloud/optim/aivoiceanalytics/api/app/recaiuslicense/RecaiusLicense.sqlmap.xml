@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Config 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--
+ * Copyright (C) 2017 OPTiM Corp. All Rights Reserved
+ * システム名：
+ * ファイル名：RecaiusLicense.sqlmap.xml
+ * 概要：
+ *
+ * 修正履歴：
+ *   編集者		日付					概要
+ *
+-->
+<mapper namespace="cloud.optim.aivoiceanalytics.api.app.recaiuslicense.RecaiusLicenseMapper">
+
+	<!--
+		RecaiusLicense エンティティのカラムマッピング
+	-->
+	<resultMap id="entityMap" type="cloud.optim.aivoiceanalytics.api.entity.RecaiusLicense" >
+		<id property="recaiusLicenseId" column="RECAIUS_LICENSE_ID" />
+		<result property="updateDate" column="UPDATE_DATE" />
+		<result property="serviceId" column="SERVICE_ID" />
+		<result property="password" column="PASSWORD" />
+		<result property="agencyCompanyId" column="AGENCY_COMPANY_ID" />
+		<result property="createDate" column="CREATE_DATE" />
+		<result property="createUserId" column="CREATE_USER_ID" />
+		<result property="createUserName" column="CREATE_USER_NAME" />
+		<result property="updateUserId" column="UPDATE_USER_ID" />
+		<result property="updateUserName" column="UPDATE_USER_NAME" />
+	</resultMap>
+
+	<!--
+		RecaiusLicenseSearchResult のカラムマッピング
+	-->
+	<resultMap id="searchResultMap" type="cloud.optim.aivoiceanalytics.api.app.recaiuslicense.RecaiusLicenseSearchResult" >
+		<id property="recaiusLicenseId" column="RECAIUS_LICENSE_ID" />
+		<result property="serviceId" column="SERVICE_ID" />
+		<result property="password" column="PASSWORD" />
+		<result property="agencyCompanyId" column="AGENCY_COMPANY_ID" />
+    <result property="updateDate" column="UPDATE_DATE" />
+	</resultMap>
+
+	<!-- SearchResult マッピング  -->
+	<!--
+		複数のテーブルを JOIN して同じカラム名が複数取得されてくるような場合、
+		SELECT 内で最初に登場するものが全てのテーブル（エンティティ）のカラム値として
+		設定されるので注意（createDate、updateDate、createUser のようなケース）
+		※クエリ内でテーブルに別名をつけても解決できません。
+		　（culumn 属性に「tbl.*」「tbl2.*」のように記述しても結果は同じ）
+		これに対処する場合は、SELECT 内でカラムに別名をつける（AS ～）必要があります。
+		その場合、上で定義している ～ResultMap も別名と一致するように修正する必要があります。
+	-->
+	<resultMap id="searchMap" type="cloud.optim.aivoiceanalytics.api.app.recaiuslicense.SearchResult">
+		<association property="recaiusLicense" resultMap="searchResultMap" />
+	</resultMap>
+
+	<!--
+		検索
+	-->
+	<select id="search" resultMap="searchMap">
+
+		SELECT
+			*
+		FROM
+			TBL_T_RECAIUS_LICENSE recaiusLicense
+		<where>
+
+
+			<!-- AGENCY_COMPANY_ID agencyCompanyId -->
+			<if test = "recaiusLicense.agencyCompanyId != null and recaiusLicense.agencyCompanyId != ''">
+				<if test = "recaiusLicense.agencyCompanyIdOption == null or recaiusLicense.agencyCompanyIdOption == ''">
+					AND AGENCY_COMPANY_ID = #{recaiusLicense.agencyCompanyId}
+				</if>
+				<if test = "recaiusLicense.agencyCompanyIdOption != null and recaiusLicense.agencyCompanyIdOption != ''">
+					<if test = "recaiusLicense.agencyCompanyIdOption == '0'">
+						AND AGENCY_COMPANY_ID = #{recaiusLicense.agencyCompanyId}
+					</if>
+					<if test = "recaiusLicense.agencyCompanyIdOption != '0'">
+						AND AGENCY_COMPANY_ID LIKE #{recaiusLicense.agencyCompanyIdQuery} ESCAPE '\\'
+					</if>
+				</if>
+			</if>
+
+		</where>
+
+		<trim prefix="ORDER BY">
+		<if test = "sortForm != null and sortForm.sortElement != null">
+			<foreach item="item" index="x" collection="sortForm.sortElement" separator=",">
+				${item.name}
+				<if test = "item.asc == true">
+					ASC
+				</if>
+				<if test = "item.asc != true">
+					DESC
+				</if>
+			</foreach>
+		</if>
+		</trim>
+
+		<if test = "sortForm != null and sortForm.maxResult != null">
+			LIMIT ${sortForm.maxResult + 1}
+			<if test = "sortForm.offset != null">
+				OFFSET ${sortForm.offset}
+			</if>
+		</if>
+	</select>
+
+</mapper>

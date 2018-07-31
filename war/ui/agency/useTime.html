@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<!-- head -->
+<head>
+<meta charset="utf-8">
+<!-- <meta charset="utf-8"> -->
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport"
+	content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="description" content="Analyze Manager">
+<meta name="author" content="Optim">
+<link rel="shortcut icon" href="../img/favicon.png">
+<title>AI Voice Analytics</title>
+<!-- Main styles for this application -->
+<link href="../css/style.css" rel="stylesheet">
+<link href="../css/ccs.css" rel="stylesheet">
+<link rel="stylesheet" type="text/css" href="../css/main.css" />
+</head>
+
+<!-- /head -->
+
+<body class="app footer-fixed">
+	<!-- modal-panel -->
+	<div class="modal align-middle fade bd-example-modal-lg" id="diaLogBox"
+		tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel"
+		aria-hidden="true"></div>
+	<!-- /modal-panel -->
+
+	<header id="navBar"
+		class="app-header navbar d-flex justify-content-end ccs-navbar"></header>
+
+	<!-- app-body -->
+	<div class="app-body">
+
+		<!-- main -->
+		<main class="main"> <!-- container -->
+		<div class="container-fluid animated fadeIn">
+
+			<div class="card-header d-flex justify-content-start h1-header">
+				<div class="h4 text-muted text-right mr-1 mb-0">
+					<i class="fa fa-clock-o" aria-hidden="true"></i>
+				</div>
+				<div class="mr-auto p-2">利用時間確認</div>
+			</div>
+			<br>
+
+			<!-- container-lower -->
+			<div class="container-lower">
+				<div class="row">
+					<!-- list -->
+					<div class="col-lg-6">
+						<div class="card h-100a" style="margin-left: 20px;">
+							<div class="card-header">年月指定</div>
+
+							<div class="modal-footer">
+								<label id="searchMsg" class="bg-warning"></label>
+								<form class="form-inline">
+									<div class="form-group">
+										<div class="input-group">
+											<select name="year" id="id_year">
+											</select><label>年</label>&nbsp;&nbsp; <select name="month"
+												id="id_month">
+											</select><label>月</label>&nbsp;&nbsp;&nbsp;&nbsp; <span
+												class="input-group-btn"><button id="search_by_month"
+													class="btn btn-secondary" type="button">検索</button> </span>
+										</div>
+									</div>
+								</form>
+							</div>
+
+							<div class="table-scroll2">
+								<div id="t1" class="scroll-wrap"></div>
+								<div class="t2" style="border: 0px">
+									<table id="main-table" class="table" style="margin-bottom: 0;">
+										<tr>
+											<th scope="col">企業ID</th>
+											<th scope="col">音声解析時間</th>
+											<th scope="col">展開/折畳</th>
+										</tr>
+										<tbody>
+										</tbody>
+									</table>
+								</div>
+								<!-- /t2 -->
+							</div>
+							<!-- /t1 -->
+						</div>
+						<!-- /table-scroll -->
+
+					</div>
+					<!-- /list -->
+
+
+					<!-- list2 -->
+					<div class="col-lg-6">
+						<div class="card h-100b" style="margin-right: 20px;">
+							<div class="card-header">企業orユーザ指定</div>
+
+							<div class="modal-footer" style="text-align: right;">
+								<label id="dispMsg">（左側リストから選択してください）</label> <label
+									id="companyOrUser"></label> <label id="companyOrUserId"></label>
+							</div>
+
+							<div id="table-scroll2">
+								<div id="t2" class="scroll-wrap"></div>
+								<div class="t2" style="border: 0px">
+									<table id="main-table2" class="table" style="margin-bottom: 0;">
+										<tr>
+											<th>年月</th>
+											<th style="text-align: right;">音声解析時間</th>
+											<th></th>
+										</tr>
+										<tbody>
+										</tbody>
+									</table>
+								</div>
+								<!-- /inner-wrap t2 -->
+							</div>
+							<!-- /t2 -->
+						</div>
+						<!-- /table-scroll -->
+
+					</div>
+					<!-- /list2 -->
+
+
+				</div>
+			</div>
+			<!-- /container-lower -->
+
+		</div>
+		<!-- /container --> </main>
+		<!-- /main -->
+	</div>
+	<!-- /app-body -->
+
+
+
+	<!-- script -->
+	<!-- Bootstrap and necessary plugins -->
+	<script src="../js/libs/jquery.min.js"></script>
+	<script src="../js/libs/tether.min.js"></script>
+	<script src="../js/libs/bootstrap.min.js"></script>
+	<script src="../js/libs/pace.min.js"></script>
+
+	<script src="../app/common/ccs.js"></script>
+	<script src="../app/common/util.js"></script>
+	<script src="../app/common/prop.js"></script>
+	<script src="../app/common/view.js"></script>
+	<script src="../app/common/api.js"></script>
+	<script src="../app/common/auth.js"></script>
+	<script src="../app/common/user.js"></script>
+
+	<script src="../app/usetime.js"></script>
+	<script src="../app/layout.js"></script>
+
+</body>
+
+</html>
+
+

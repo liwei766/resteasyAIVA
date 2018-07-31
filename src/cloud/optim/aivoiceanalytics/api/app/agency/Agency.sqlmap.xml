@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Config 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--
+ * Copyright (C) 2017 OPTiM Corp. All Rights Reserved
+ * システム名：
+ * ファイル名：Agency.sqlmap.xml
+ * 概要：
+ *
+ * 修正履歴：
+ *   編集者		日付					概要
+ *
+-->
+<mapper namespace="cloud.optim.aivoiceanalytics.api.app.agency.AgencyMapper">
+
+	<!--
+		Agency エンティティのカラムマッピング
+	-->
+	<resultMap id="entityMap" type="cloud.optim.aivoiceanalytics.api.entity.Agency" >
+		<id property="agencyId" column="AGENCY_ID" />
+		<result property="updateDate" column="UPDATE_DATE" />
+		<result property="agencyCompanyId" column="AGENCY_COMPANY_ID" />
+		<result property="createDate" column="CREATE_DATE" />
+		<result property="createUserId" column="CREATE_USER_ID" />
+		<result property="createUserName" column="CREATE_USER_NAME" />
+		<result property="updateUserId" column="UPDATE_USER_ID" />
+		<result property="updateUserName" column="UPDATE_USER_NAME" />
+	</resultMap>
+
+	<!--
+		AgencySearchResult のカラムマッピング
+	-->
+	<resultMap id="searchResultMap" type="cloud.optim.aivoiceanalytics.api.app.agency.AgencySearchResult" >
+		<id property="agencyId" column="AGENCY_ID" />
+		<result property="serviceId" column="SERVICE_ID" />
+		<result property="password" column="PASSWORD" />
+		<result property="agencyCompanyId" column="AGENCY_COMPANY_ID" />
+    <result property="updateDate" column="UPDATE_DATE" />
+	</resultMap>
+
+	<!-- SearchResult マッピング  -->
+	<resultMap id="searchMap" type="cloud.optim.aivoiceanalytics.api.app.agency.SearchResult">
+		<association property="agency" resultMap="searchResultMap" />
+	</resultMap>
+
+	<select id="search" resultMap="searchMap">
+
+		SELECT
+			*
+		FROM
+			TBL_T_AGENCY agency
+		<where>
+
+			<!-- AGENCY_COMPANY_ID agencyCompanyId -->
+			<if test = "agency.agencyCompanyId != null and agency.agencyCompanyId != ''">
+				<if test = "agency.agencyCompanyIdOption == null or agency.agencyCompanyIdOption == ''">
+					AND AGENCY_COMPANY_ID = #{agency.agencyCompanyId}
+				</if>
+				<if test = "agency.agencyCompanyIdOption != null and agency.agencyCompanyIdOption != ''">
+					<if test = "agency.agencyCompanyIdOption == '0'">
+						AND AGENCY_COMPANY_ID = #{agency.agencyCompanyId}
+					</if>
+					<if test = "agency.agencyCompanyIdOption != '0'">
+						AND AGENCY_COMPANY_ID LIKE #{agency.agencyCompanyIdQuery} ESCAPE '\\'
+					</if>
+				</if>
+			</if>
+
+		</where>
+
+		<trim prefix="ORDER BY">
+		<if test = "sortForm != null and sortForm.sortElement != null">
+			<foreach item="item" index="x" collection="sortForm.sortElement" separator=",">
+				${item.name}
+				<if test = "item.asc == true">
+					ASC
+				</if>
+				<if test = "item.asc != true">
+					DESC
+				</if>
+			</foreach>
+		</if>
+		</trim>
+
+		<if test = "sortForm != null and sortForm.maxResult != null">
+			LIMIT ${sortForm.maxResult + 1}
+			<if test = "sortForm.offset != null">
+				OFFSET ${sortForm.offset}
+			</if>
+		</if>
+	</select>
+
+</mapper>

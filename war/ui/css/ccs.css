@@ -1,0 +1,842 @@
+@charset "UTF-8";
+
+body {
+	height: 100vh;
+}
+
+.app-body {
+	flex: 1;
+}
+
+/* Microsoft Edge ブラウザ対応 */
+.overflow-y-hidden {
+	overflow-y: hidden;
+}
+
+.card-header,
+.card-footer {
+	flex-grow: 0;
+	flex-shrink: 0;
+}
+
+.card-block {
+	overflow: auto;
+	flex-grow: 1;
+	flex-shrink: 1;
+}
+
+/*
+ * -----------------------------------------------------------------------------
+ * 共通（汎用）
+ */
+
+/* エラーは赤文字 */
+.text-error {
+	color: #BF0855 !important; /* danger 色 */
+}
+
+/* グレーの背景にエラーを表示する場合は、背景を赤にする */
+.bg-error {
+	color: white !important;
+	background-color: #BF0855; /* danger 色 */
+	padding: 6px 10px;
+}
+
+/* 権限で非表示にする項目のスタイル（アクセス制限に使用するので他の用途には使用不可） */
+.ccs-hidden {
+	display: none !important;
+}
+
+/* 境界線非表示 */
+.ccs-no-border {
+	border: none !important;
+}
+
+/* ボタン付き入力フィールド */
+.ccs-with-button {
+	border: solid 1px #F2F2F2; /* .card-block と同色 */
+}
+
+/* カーソル初期 */
+.cursor-default {
+	cursor: default !important;
+}
+
+/* 透過色 */
+.color-transparent {
+	color: transparent;
+}
+
+
+/* カーソル禁止 */
+.cursor-not-allowed {
+	cursor: not-allowed !important;
+}
+
+/*
+ * -----------------------------------------------------------------------------
+ * 共通（ヘッダ）
+ */
+
+/* ユーザ ID */
+#navUserId {
+	max-width: 230px;
+}
+
+/* ユーザ名 */
+#navUserName {
+	max-width: 630px;
+}
+
+/*
+ * ユーザ ID／ユーザ名
+ *
+ * 改行しない／横にはみ出る場合は表示しない
+ */
+#navUserId ,
+#navUserName {
+	display: block;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+/*
+ * -----------------------------------------------------------------------------
+ * 共通（サイドメニュー）
+ */
+
+/* ↓ サイドメニューオープン時の幅を変更（このブロックのスタイルは style.css からコピーして修正した） */
+.app-body .sidebar { /* オープン時の設定 */
+    flex: 0 0 200px;
+}
+
+@media (min-width: 992px) { /* クローズ時の設定：これがないと上のスタイルで上書きされてしまう */
+.sidebar-minimized .sidebar {
+    flex: 0 0 60px;
+}
+}
+
+.sidebar .nav { /* <ul> の幅：これがないと <li> の幅が広がらない */
+    width: 100%;
+}
+
+.sidebar .nav .nav-item .nav-link i, /* オープン時のアイコンサイズをデザイン画に合わせて修正 */
+.sidebar .nav .nav-item .navbar .dropdown-toggle i,
+.navbar .sidebar .nav .nav-item .dropdown-toggle i {
+	width: 28px; /* 元のフォントサイズが小さいので、これがないと右側の文字と重なってしまう */
+	font-size: 24px;
+}
+/* ↑ サイドメニューオープン時の幅を変更 */
+
+/* 開閉ボタン押下時に、周囲に青いラインが表示されてしまうのを回避 */
+.navbar-toggler:focus {
+	outline: none;
+}
+
+/* クローズ時のアイコンサイズをデザイン画に合わせて修正 */
+@media (min-width: 992px) {
+.sidebar-minimized .sidebar .nav .nav-item .nav-link i,
+.sidebar-minimized .sidebar .nav .nav-item .navbar .dropdown-toggle i,
+.navbar .sidebar-minimized .sidebar .nav .nav-item .dropdown-toggle i {
+	font-size: 24px;
+}
+
+#navMenu .nav-link {
+	/*
+	 * <a> の幅と高さを外側wの <li> に合わせる：
+	 *	これがないと <a> の色が変わった後に <li> の色が変わるのが目視できてしまう
+	 */
+	width: 200px;
+	height: 100%;
+
+	/* アイコンと文字を縦方向にセンタリング */
+	display: flex;
+	align-items: center;
+
+	/*
+	 * 改行禁止：これがないとオープン時のアニメーションで以下のような状態が目視できてしまう
+	 * →メニューが広がるとともに、幅に合わせて改行されていたテキストも横に広がっていく
+	 */
+	white-space: nowrap;
+}
+
+
+/* ↓ サイドバーの周りにラインを追加 */
+.sidebar {
+	border-top: solid 1px #191919; /* グレー1 */
+	border-right: solid 1px #191919; /* グレー1 */
+	border-bottom: solid 1px #191919; /* グレー1 */
+
+	/*
+	 * これがないと、ホバーしたメニューを表示するときにボーダーの幅が考慮されず、
+	 * ホバー時にサイドメニューの幅が 1 px 広がってしまう
+	 */
+    box-sizing: content-box;
+}
+
+.sidebar * {
+
+	/* sidebar 以下の要素は通常通りにサイズ計算する */
+    box-sizing: border-box;
+}
+/* ↑ サイドバーの周りにラインを追加 */
+
+/* 高さを h1-header に合わせる */
+#navMenu .nav-item {
+	height: 57px; /* .h1-header と同値 */
+}
+
+/* 選択中 */
+#navMenu .nav-item.open,
+#navMenu .nav-item.open * {
+	background: #3CB1FF !important; /* primay 色 */
+}
+
+/* ホバー中 */
+#navMenu .nav-item:hover,
+#navMenu .nav-item.open:hover,
+
+#navMenu .nav-item:hover *,
+#navMenu .nav-item.open:hover * {
+	background: #989898 !important; /* グレー4 */
+}
+
+/* オペレーション画面で非活性にするときに使用 */
+#navMenu .nav-item.disabled * {
+	cursor: default !important;
+	opacity: 0.65; /* グレー-4 */
+}
+
+#navMenu .nav-item.disabled:hover,
+#navMenu .nav-item.disabled:hover * {
+	color: #989898 !important; /* グレー4 */
+	background: #444444 !important; /* グレー2 */
+}
+
+/*
+ * -----------------------------------------------------------------------------
+ * 共通（一覧部分）
+ */
+.ccs-list-table {
+	flex: 1;
+	display: flex;
+	flex-direction: column;
+}
+
+.ccs-list-table .t1 { /* 一覧の見出しは高さ固定 */
+	flex: 0 0 45px;
+}
+
+.ccs-list-table .t2 {
+	flex: 1;
+	max-height: calc(100vh - 138px)  /* Microsoft Edge ブラウザ対応 100% ⇒ calc(100vh - 138px) */
+}
+
+/* 項目ボタン押下時に、周囲に青いラインが表示されてしまうのを回避 */
+.ccs-list-table thead .btn-link {
+	outline: none;
+}
+
+/* 一覧の見出しに最低幅設定 */
+.ccs-list-table thead th {
+	min-width: 90px;
+
+}
+
+
+/* Microsoft Edge ブラウザ対応 */
+.ccs-list-table thead th.min-w-120 {
+	min-width: 120px;
+}
+
+
+/* Microsoft Edge ブラウザ対応 */
+.ccs-list-table thead th.min-w-180 {
+	min-width: 180px;
+}
+
+/* 一覧の見出し */
+.ccs-list-table th {
+	text-align: left;
+}
+
+/* 一覧のデータ（タイトルを除く） */
+.ccs-list-table td {
+	text-align: left;
+}
+
+
+/* 一覧の見出しと本体の間にラインを表示 */
+.ccs-list-table .t2 {
+	border-top: solid 1px #191919 !important; /* グレー1 */
+}
+
+/* 一覧の見出しと本体の間の空白を回避 */
+.ccs-list-table .t2 button {
+	padding-top: 0;
+	padding-bottom: 0;
+	border-top: none;
+	border-bottom: none;
+	height:0;
+	max-height:0;
+}
+.ccs-list-table .t2 i {
+	line-height: 0;
+}
+
+
+/* 一覧の最後のデータは下のライン非表示（外側のラインと重なって太くなってしまうのを回避） */
+.ccs-list-table .t2 tr:last-child * {
+	border-bottom: none;
+}
+
+/* ページング表示行 */
+.ccs-list-paging-space {
+	font-weight:bold;
+	text-align: right;
+	position: relative;
+}
+
+/* ページング表示エリア */
+.ccs-paging-area {
+	padding:10px 10px 0 0;
+}
+
+/* ページングボタン */
+.ccs-paging-area button {
+	margin:0 7px 10px 0;
+	line-height: 1;
+}
+
+/*
+ * -----------------------------------------------------------------------------
+ * 共通（その他の共通部分）
+ */
+
+/* Microsoft Edge ブラウザ対応 */
+.card-height {
+  height: 100%;
+}
+
+/* h1-header 以外はグレー3 なので style.css を上書き */
+.card-header {
+	background: #747474 !important; /* グレー3 */
+}
+
+/* h1-header 左ペインのヘッダ */
+.h1-header {
+	height: 57px;
+	flex: 0 0 57px;
+	align-items: center;
+	background: #444444 !important; /* グレー2 */
+}
+
+/* h2-header 右ペインのヘッダ */
+.h2-header {
+	height: 57px;
+	flex: 0 0 57px;
+	align-items: center;
+	background: #747474 !important; /* グレー3 */
+}
+
+/* style.css で overflow-y: scroll が指定されているが、スクロールバーは必要なときだけ表示する */
+.inner-wrap {
+	overflow-y: auto;
+}
+
+/*
+ * -----------------------------------------------------------------------------
+ * 共通（ダイアログ）
+ */
+
+.modal {
+
+	color: black;
+}
+
+/*
+ * -----------------------------------------------------------------------------
+ * 共通（ダウンロード中表示）
+ */
+
+
+/* ダウンロード中非表示(初期表示時) */
+.app #loading-bar-spinner {
+	display: none;
+}
+
+/* ダウンロード中表示 */
+.app #loading-bar-spinner .spinner-icon {
+
+	position: fixed;
+	top: 50%;
+	left: 50%;
+	margin-left: -50px; /* half width of the spinner icon */
+	margin-top: -50px; /* half height of the spinner icon */
+	text-align:center;
+	z-index:1234;
+	overflow: auto;
+	width: 100px; /* width of the spinner icon */
+	height: 102px; /*hight of the spinner icon +2px to fix IE8 issue */
+}
+
+/*
+ * -----------------------------------------------------------------------------
+ * エラー画面
+ */
+
+.ccs-err-message {
+
+	padding: 10px 20px;
+}
+
+/*
+ * -----------------------------------------------------------------------------
+ * オペレーション画面
+ */
+
+/* ↓ 画面構成（レイアウト） */
+.ccs-op-right-pane {
+	display: flex;
+	flex-direction: column;
+}
+
+.ccs-op-right-pane > * {
+	height: 171px;
+	flex: 0 0 171px;
+}
+
+.ccs-op-low-pane {
+	height: 100%;
+	flex:1;
+}
+/* ↑ 画面構成（レイアウト） */
+
+/* 長い行を改行 */
+.ccs-op-tag,			/* タグ */
+#knowledgeTitleArea,	/* ナレッジ一覧 */
+.ccs-op-answer {		/* ナレッジ詳細 */
+	overflow-wrap: break-word;
+	white-space: normal;
+	max-width: 100%;
+	word-break: break-all;
+}
+
+/* 通話内容：高さを固定 */
+.ccs-op-call {
+	height: 100%;
+}
+
+/* 通話内容の下のボタン群 */
+.ccs-op-footer: {
+	height: 60px
+	flex-basis: 60px;
+}
+
+/* 通話ステータスは固定幅にする（右にある項目が動いてしまうのを回避）*/
+#callStat {
+	width: 100px;
+}
+
+/* タグエリア：スクロール */
+#tagListArea {
+	height: 80px;
+	overflow: auto;
+}
+
+/* タグ：横幅指定 */
+.ccs-op-tag {
+	max-width: 100%;
+}
+
+/* ナレッジ一覧エリア */
+.ccs-op-list {
+	overflow: auto;
+
+	width: 360px; /* 固定幅 by design */
+}
+
+/* ナレッジ一覧の行 */
+.ccs-knowledge-title {
+	cursor: pointer;
+}
+
+/* ナレッジ詳細 */
+.ccs-op-answer-area {
+	flex:1; /* 横幅を「残り全部」にする */
+}
+
+.ccs-op-answer {
+	overflow: auto; /* はみ出したらスクロール */
+	background-color: #F2F2F2; /* .card-block と同色 */
+}
+
+.ccs-op-answer * {
+	overflow: visible; /* ナレッジ詳細の中の card-block はスクロールバー表示しない */
+}
+
+/* ナレッジ詳細の見出しが button なので、カーソル形状が変わるのを回避する */
+.ccs-op-answer button:hover {
+	cursor: default;
+}
+
+/* 参照URL,マニュアル削除ボタン(非活性) */
+.del_btn_disabed_color {
+	color: #D1D4D7; /* lightergray */
+}
+
+/*
+ * 表示量の少ない回答を表示した時「タイトル」以降の項目が下に下がってしまうのを回避する
+ * （元の状態では flex: 1 1 auto のため、量が少ないと縦に広がってしまう）
+ */
+.ccs-op-answer .card-block {
+	flex: 0 1 auto;
+}
+
+/*
+ * -----------------------------------------------------------------------------
+ * ナレッジ登録画面
+ */
+
+/* ↓ 画面構成（レイアウト） */
+.ccs-edit-right-pane {
+	display: flex;
+	flex-direction: column;
+}
+
+.ccs-edit-low-pane {
+	flex:1;
+}
+
+.ccs-edit-low-pane > * {
+	flex:0 0 auto;
+}
+/* ↑ 画面構成（レイアウト） */
+
+/* 編集エリアのタグ：長い場合は改行 */
+.ccs-edit-tag {
+	max-width: 100%;
+	overflow-wrap: break-word;
+	white-space: normal;
+}
+
+/* タグ削除ボタン：hover でカーソル変更 */
+.ccs-edit-delete-tag {
+	cursor:pointer;
+}
+
+/* 通話履歴一覧エリア */
+.ccs-edit-list-area {
+	max-height: 100vh;
+	overflow: auto;
+
+	width: 360px; /* 固定幅 by design */
+}
+
+/* 通話履歴一覧の行 */
+.ccs-edit-list-area .ccs-log {
+	cursor:pointer;
+}
+
+/* 通話内容 */
+.ccs-edit-log-area {
+	flex:1; /* 横幅を「残り全部」にする */
+}
+
+.ccs-edit-log {
+	height: 100%;
+}
+
+/* ログ詳細 */
+.ccs-edit-log {
+	overflow: auto;
+}
+
+/* 再生中表示 */
+.ccs-edit-log .play-now {
+	color: #BF0855;
+}
+
+/* ログ詳細1行 */
+.detail-log {
+	cursor:pointer;
+}
+
+/* 再生ボタン非表示 */
+.ccs-edit-log .no-play {
+	color: transparent;
+	cursor: default !important;
+}
+
+/* エラーボタン */
+.ccs-edit-log .fa-exclamation-triangle {
+	cursor: default !important;
+}
+
+/* ログ詳細テキスト */
+.ccs-edit-log .detail-txt {
+	max-width: 100%;
+	word-break: break-all;
+}
+/* ログ詳細テキスト 編集なし*/
+.ccs-edit-log .no-edit{
+	cursor: default !important;
+}
+
+/* ログ詳細テキストフォーム */
+.ccs-edit-log .w-input-form {
+	width: 100%;
+}
+
+/*
+ * -----------------------------------------------------------------------------
+ * 管理画面
+ */
+
+/* ↓ 画面構成（レイアウト） */
+.ccs-admin-warn-area {
+	flex: 0 0 30px;
+	height: 50px;
+}
+
+.ccs-admin-right-pane {
+	display: flex;
+	flex-direction: column;
+}
+/* ↑ 画面構成（レイアウト） */
+
+/* 一覧のタイトル：長い場合は改行 */
+.ccs-admin-dispTitle {
+	max-width: 100%;
+	word-break: break-all;
+	cursor: pointer;
+}
+
+/* 編集エリアのタグ：長い場合は改行 */
+.ccs-admin-tag {
+	max-width: 100%;
+	overflow-wrap: break-word;
+	white-space:normal;
+}
+
+/* タグ削除ボタン：hover でカーソル変更 */
+.ccs-admin-delete-tag {
+	cursor: pointer;
+}
+
+/*
+ * -----------------------------------------------------------------------------
+ * 利用時間画面
+ */
+.ccs-useTime-companyId {
+	max-width: 100%;
+	word-break: break-all;
+	cursor: pointer;
+
+}
+
+.ccs-useTime-user {
+	background-color:#9c9c9c; /*#ffffe0;*/
+}
+
+.ccs-useTime-userId {
+	cursor: pointer;
+}
+
+
+.ccs-useTime-companyDtl {
+	max-width: 100%;
+	word-break: break-all;
+	text-align: right;
+	cursor: pointer;
+}
+
+/*
+ * -----------------------------------------------------------------------------
+ * ライセンス管理画面
+ */
+
+/* ↓ 画面構成（レイアウト） */
+.ccs-license-warn-area {
+	flex: 0 0 30px;
+	height: 50px;
+}
+
+.ccs-license-right-pane {
+	display: flex;
+	flex-direction: column;
+}
+/* ↑ 画面構成（レイアウト） */
+
+/* ライセンス一覧の行 */
+.ccs-list-table .ccs-license {
+	cursor: pointer;
+}
+
+/* サービス利用ID */
+.ccs-list-table td.ccs-license-listServiceId {
+	max-width: 100%;
+	word-break: break-all;
+}
+
+/* 代理店企業ID */
+.ccs-list-table td.ccs-license-listAgencyCompanyId {
+	max-width: 100%;
+	word-break: break-all;
+}
+
+/*
+ * -----------------------------------------------------------------------------
+ * 企業管理画面
+ */
+
+/* ↓ 画面構成（レイアウト） */
+.ccs-company-management-warn-area {
+	flex: 0 0 30px;
+	height: 50px;
+}
+
+.ccs-company-management-right-pane {
+	display: flex;
+	flex-direction: column;
+}
+// 企業ID
+.ccs-company-management-right-pane #dispNo{
+	max-width: 100%;
+	word-break: break-all;
+}
+
+/* ↑ 画面構成（レイアウト） */
+
+
+
+/* 企業一覧の行 */
+.ccs-list-table .ccs-company-management {
+	cursor: pointer;
+}
+
+/* 企業ID */
+.ccs-company-management-listId {
+	max-width: 100%;
+	word-break: break-all;
+}
+
+/* 一覧の企業名：長い場合は改行 */
+.ccs-company-management-listCompanyName {
+	max-width: 100%;
+	word-break: break-all;
+}
+
+
+/*
+ * -----------------------------------------------------------------------------
+ * 代理店管理画面
+ */
+
+
+/* ↓ 画面構成（レイアウト） */
+.ccs-agency-management-warn-area {
+	flex: 0 0 30px;
+	height: 50px;
+}
+
+.ccs-agency-management-right-pane {
+	display: flex;
+	flex-direction: column;
+}
+/* ↑ 画面構成（レイアウト） */
+
+/* 代理店一覧の行 */
+.ccs-list-table .ccs-agency-management {
+	cursor: pointer;
+}
+
+.ccs-list-table td.ccs-agency-listAgencyCompanyId {
+	max-width: 100%;
+	word-break: break-all;
+}
+
+/*
+ * -----------------------------------------------------------------------------
+ * 履歴管理画面
+ */
+/* 履歴一覧の行 */
+.ccs-list-table .ccs-speechlog-management {
+	cursor: pointer;
+}
+
+/* 企業ID */
+.ccs-speechlog-management-listId {
+	max-width: 100%;
+	word-break: break-all;
+}
+
+/* 一覧の通話者名：長い場合は改行 */
+.ccs-speechlog-management-listUserName {
+	max-width: 100%;
+	word-break: break-all;
+}
+
+/* ダウンロード中表示 */
+.callLogManagement #loading-bar-spinner .spinner-icon {
+
+	position: fixed;
+	top: 50%;
+	left: 50%;
+	margin-left: -50px; /* half width of the spinner icon */
+	margin-top: -50px; /* half height of the spinner icon */
+	text-align:center;
+	z-index:1234;
+	overflow: auto;
+	width: 100px; /* width of the spinner icon */
+	height: 102px; /*hight of the spinner icon +2px to fix IE8 issue */
+
+}
+
+/*
+ * -----------------------------------------------------------------------------
+ * 音声解析画面
+ */
+
+/* 音声解析履歴内容表示 */
+.speech #dispLog  {
+	height: 400px;
+	overflow: auto;
+}
+
+/* 音声解析ステータスは固定幅にする（右にある項目が動いてしまうのを回避）*/
+#speechStatus {
+	width: 100px;
+}
+
+/* ログ詳細テキスト 編集なし */
+.speech .ccs-edit-log .no-edit{
+	cursor: not-allowed !important;
+}
+
+/* 進捗率エリア */
+.speech #contents {
+	width:380px;
+}
+
+/* 進捗率バー */
+.speech #progressbar {
+	width:0%;
+}
+
+/*
+ * -----------------------------------------------------------------------------
+ * パスワード管理画面
+ */
+/* 表示のみ入力フォーム */
+.password .ccs-password-form-readonly {
+	background-color:#9c9c9c;
+	color:white;
+	cursor: default !important;
+}
+
+/* ユーザ一覧の行 */
+.ccs-list-table .ccs-password-user {
+	cursor: pointer;
+}

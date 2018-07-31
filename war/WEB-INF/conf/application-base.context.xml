@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans	xmlns="http://www.springframework.org/schema/beans"
+		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		xmlns:p="http://www.springframework.org/schema/p"
+		xmlns:aop="http://www.springframework.org/schema/aop"
+		xmlns:context="http://www.springframework.org/schema/context"
+		xmlns:tx="http://www.springframework.org/schema/tx"
+		xmlns:mybatis="http://mybatis.org/schema/mybatis-spring"
+		xmlns:task="http://www.springframework.org/schema/task"
+		xsi:schemaLocation="
+			http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.3.xsd
+			http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.3.xsd
+			http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.3.xsd
+			http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.3.xsd
+			http://mybatis.org/schema/mybatis-spring http://mybatis.org/schema/mybatis-spring.xsd
+			http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task-4.3.xsd
+		">
+
+	<!--
+		アノテーション設定
+	-->
+	<context:component-scan base-package="cloud.optim.aivoiceanalytics"/>
+	<context:annotation-config/>
+
+	<mybatis:scan base-package="cloud.optim.aivoiceanalytics" />
+
+	<!--
+		プロパティファイル設定
+	-->
+	<bean id="propertyConfigurer" class="org.springframework.context.support.PropertySourcesPlaceholderConfigurer">
+		<property name="locations">
+			<list>
+				<value>classpath:jdbc.properties</value>
+				<value>classpath:application.properties</value>
+			</list>
+		</property>
+		<property name="fileEncoding" value="UTF-8" />
+	</bean>
+
+
+
+	<!--
+		共通用コンフィグファイル設定
+	-->
+	<bean id="config" class="org.apache.commons.configuration.PropertiesConfiguration">
+		<constructor-arg index="0" value="application.properties" />
+		<property name="encoding" value="UTF-8" />
+	</bean>
+
+
+
+	<!-- 共通用メッセージファイル設定 -->
+	<bean id="messageSource" class="org.springframework.context.support.ResourceBundleMessageSource">
+		<property name="basenames">
+			<list>
+				<value>resource/message</value>
+			</list>
+		</property>
+		<property name="defaultEncoding" value="UTF-8" />
+	</bean>
+
+	<!-- 音声ファイルダウンロード用のexecutorService -->
+	<bean id="executorService" class="java.util.concurrent.Executors" factory-method="newFixedThreadPool">
+		<constructor-arg>
+			<value>${speech.log.download.ffmpeg.threads}</value>
+		</constructor-arg>
+	</bean>
+
+	<!--   音声圧縮スケジューラ定義   -->
+    <task:scheduler id="encodeScheduler" pool-size="1" />
+	<task:scheduled-tasks scheduler="encodeScheduler">
+		<task:scheduled ref="voiceEncodeJob" method="encode" fixed-delay="${job.voice.encode}" />
+	</task:scheduled-tasks>
+    <bean id="voiceEncodeJob" class="cloud.optim.aivoiceanalytics.job.voiceencode.VoiceEncodeJob"/>
+
+	<!--   音声削除スケジューラ定義   -->
+    <task:scheduler id="deleteScheduler" pool-size="1" />
+	<task:scheduled-tasks scheduler="deleteScheduler">
+		<task:scheduled ref="voiceDeleteJob" method="delete" cron="${job.voice.delete}" />
+	</task:scheduled-tasks>
+	<bean id="voiceDeleteJob" class="cloud.optim.aivoiceanalytics.job.voicedelete.VoiceDeleteJob"/>
+
+	<!-- 形態素解析 -->
+	<bean id="tokenizer" class="com.atilika.kuromoji.ipadic.Tokenizer"/>
+	<bean id="morphologicalAnalyzer" class="cloud.optim.aivoiceanalytics.api.util.KuromojiAnalyzer">
+		<constructor-arg name="ngPartOfSpeech" value="${morphlogical.analyze.ng.part.of.speech}" />
+		<constructor-arg name="extractPartOfSpeech" value="${morphlogical.analyze.extract.part.of.speech}" />
+		<constructor-arg name="userDictionary" value="${morphlogical.analyze.user.dictionary.base.path}/${morphlogical.analyze.user.dictionary.file.name}" />
+	</bean>
+
+	<!--
+		DB接続データソース設定
+	-->
+	<bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource"
+			destroy-method="close"
+			p:driverClassName="${hibernate.connection.driver_class}"
+			p:url="${hibernate.connection.url}"
+			p:username="${hibernate.connection.username}"
+			p:password="${hibernate.connection.password}"
+
+			p:defaultAutoCommit="${pool.defaultAutoCommit}"
+			p:defaultReadOnly="${pool.defaultReadOnly}"
+
+			p:initialSize="${pool.initialSize}"
+			p:maxActive="${pool.maxActive}"
+			p:maxIdle="${pool.maxIdle}"
+			p:minIdle="${pool.minIdle}"
+			p:maxWait="${pool.maxWait}"
+
+			p:testOnBorrow="${pool.testOnBorrow}"
+			p:testOnReturn="${pool.testOnReturn}"
+			p:validationQuery="${pool.validationQuery}"
+
+			p:poolPreparedStatements="${pool.poolPreparedStatements}"
+			p:maxOpenPreparedStatements="${pool.maxOpenPreparedStatements}"
+	/>
+
+
+	<!--
+		Hibernate用SessionFactory起動設定
+
+		マルチテナントの場合、hibernateProperties に以下のような記述を追加
+
+		※tenant_identifier_resolver、multi_tenant_connection_provider には
+		　既製ビーンまたはプロジェクトで作成したビーンへの参照を指定する
+
+				<entry key="hibernate.multiTenancy" value="DATABASE" /> ← NONE から適宜変更
+				<entry key="hibernate.tenant_identifier_resolver" value-ref="tenantIdResolver"/>
+				<entry key="hibernate.multi_tenant_connection_provider" value-ref="multiTenantConnectionProviderImpl"/>
+				<entry key="hibernate.connection.release_mode" value="on_close" />
+	-->
+	<bean id="sessionFactory" class="org.springframework.orm.hibernate5.LocalSessionFactoryBean">
+		<property name="dataSource" ref="dataSource"/>
+		<property name="mappingLocations">
+			<list>
+				<value>classpath*:**/*.hbm.xml</value>
+			</list>
+		</property>
+
+		<property name="hibernateProperties">
+			<map>
+				<entry key="hibernate.dialect" value="${hibernate.dialect}" />
+				<entry key="hibernate.show_sql" value="${hibernate.show_sql}" />
+				<entry key="hibernate.hbm2ddl.auto" value="${hibernate.hbm2ddl.auto}" />
+				<entry key="hibernate.format_sql" value="${hibernate.format_sql}" />
+				<entry key="hibernate.use_sql_comments" value="${hibernate.use_sql_comments}" />
+				<entry key="hibernate.generate_statistics" value="${hibernate.generate_statistics}" />
+
+				<entry key="hibernate.auto_import" value="false" />
+
+				<entry key="hibernate.multiTenancy" value="NONE" />
+				<entry key="hibernate.connection.handling_mode" value="DELAYED_ACQUISITION_AND_HOLD" />
+			</map>
+		</property>
+	</bean>
+
+
+	<!--
+		Hibernate用トランザクションマネージャ設定
+	-->
+	<bean	id="transactionManager"
+			class="org.springframework.orm.hibernate5.HibernateTransactionManager"
+			p:sessionFactory-ref="sessionFactory"
+	/>
+
+	<!--
+		MyBatis Session 設定
+	-->
+	<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<property name="dataSource" ref="dataSource" />
+		<property name="configLocation" value="WEB-INF/conf/sqlmap-config.xml" />
+		<property name="mapperLocations" value="classpath*:**/*.sqlmap.xml" />
+	</bean>
+
+	<!--
+		デフォルトトランザクションマネージャ指定
+	-->
+	<tx:annotation-driven transaction-manager="transactionManager"/>
+
+	<!-- オーディオフォーマット -->
+	<bean id="defaultAudioFormat" class="javax.sound.sampled.AudioFormat">
+		<constructor-arg name="encoding">
+			<value type="javax.sound.sampled.AudioFormat.Encoding">PCM_SIGNED</value>
+		</constructor-arg>
+    	<constructor-arg name="sampleRate"       value="16000.0F" />
+    	<constructor-arg name="sampleSizeInBits" value="16" />
+    	<constructor-arg name="channels"         value="1" />
+    	<constructor-arg name="frameSize"        value="2" />
+    	<constructor-arg name="frameRate"        value="16000.0F" />
+    	<constructor-arg name="bigEndian"        value="false" />
+	</bean>
+</beans>

@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Config 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- * Copyright (C) 2017 OPTiM Corp. All Rights Reserved * システム名： * ファイル名：CompanyManagement.sqlmap.xml
+	* 概要： * * 修正履歴： * 編集者 日付 概要 * -->
+<mapper
+	namespace="cloud.optim.aivoiceanalytics.api.app.companymanagement.CompanyManagementMapper">
+
+	<!-- CompanyManagement エンティティのカラムマッピング -->
+	<resultMap id="entityMap"
+		type="cloud.optim.aivoiceanalytics.api.entity.CompanyManagement">
+		<id property="companyManagementId" column="COMPANY_MANAGEMENT_ID" />
+		<result property="updateDate" column="UPDATE_DATE" />
+		<result property="companyId" column="COMPANY_ID" />
+		<result property="companyName" column="COMPANY_NAME" />
+		<result property="agencyCompanyId" column="AGENCY_COMPANY_ID" />
+		<result property="recaiusLicenseId" column="RECAIUS_LICENSE_ID" />
+		<result property="recaiusModelId" column="RECAIUS_MODEL_ID" />
+		<result property="energyThreshold" column="ENERGY_THRESHOLD" />
+		<result property="saveVoice" column="SAVE_VOICE" />
+		<result property="permitIpAddress" column="PERMIT_IP_ADDRESS" />
+		<result property="createDate" column="CREATE_DATE" />
+		<result property="createUserId" column="CREATE_USER_ID" />
+		<result property="createUserName" column="CREATE_USER_NAME" />
+		<result property="updateUserId" column="UPDATE_USER_ID" />
+		<result property="updateUserName" column="UPDATE_USER_NAME" />
+	</resultMap>
+
+	<!-- CompanyManagementSearchResult のカラムマッピング -->
+	<resultMap id="searchResultMap"
+		type="cloud.optim.aivoiceanalytics.api.app.companymanagement.CompanyManagementSearchResult">
+		<id property="companyManagementId" column="COMPANY_MANAGEMENT_ID" />
+		<result property="companyId" column="COMPANY_ID" />
+		<result property="companyName" column="COMPANY_NAME" />
+		<result property="agencyCompanyId" column="AGENCY_COMPANY_ID" />
+		<result property="recaiusLicenseId" column="RECAIUS_LICENSE_ID" />
+		<result property="recaiusModelId" column="RECAIUS_MODEL_ID" />
+		<result property="energyThreshold" column="ENERGY_THRESHOLD" />
+		<result property="saveVoice" column="SAVE_VOICE" />
+		<result property="permitIpAddress" column="PERMIT_IP_ADDRESS" />
+	</resultMap>
+
+	<!-- SearchResult マッピング -->
+	<!-- 複数のテーブルを JOIN して同じカラム名が複数取得されてくるような場合、 SELECT 内で最初に登場するものが全てのテーブル（エンティティ）のカラム値として
+		設定されるので注意（createDate、updateDate、createUser のようなケース） ※クエリ内でテーブルに別名をつけても解決できません。
+		（culumn 属性に「tbl.*」「tbl2.*」のように記述しても結果は同じ） これに対処する場合は、SELECT 内でカラムに別名をつける（AS
+		～）必要があります。 その場合、上で定義している ～ResultMap も別名と一致するように修正する必要があります。 -->
+	<resultMap id="searchMap"
+		type="cloud.optim.aivoiceanalytics.api.app.companymanagement.SearchResult">
+		<association property="companyManagement" resultMap="searchResultMap" />
+	</resultMap>
+
+	<!-- 検索 -->
+	<select id="search" resultMap="searchMap">
+
+		SELECT
+		*
+		FROM
+		TBL_T_COMPANY_MANAGEMENT companyManagement
+		<where>
+
+			<!-- COMPANY_NAME companyName -->
+			<if
+				test="companyManagement.companyName != null and companyManagement.companyName != ''">
+				<if
+					test="companyManagement.companyNameOption == null or companyManagement.companyNameOption == ''">
+					AND COMPANY_NAME = #{companyManagement.companyName}
+				</if>
+				<if
+					test="companyManagement.companyNameOption != null and companyManagement.companyNameOption != ''">
+					<if test="companyManagement.companyNameOption == '0'">
+						AND COMPANY_NAME = #{companyManagement.companyName}
+					</if>
+					<if test="companyManagement.companyNameOption != '0'">
+						AND COMPANY_NAME LIKE
+						#{companyManagement.companyNameQuery} ESCAPE '\\'
+					</if>
+				</if>
+			</if>
+			<!-- AGENCY_COMPANY_ID ROLE_AGENCY のときだけ使う -->
+			<if
+				test="companyManagement.agencyCompanyId != null and companyManagement.agencyCompanyId != ''">
+				AND AGENCY_COMPANY_ID = #{companyManagement.agencyCompanyId}
+			</if>
+
+		</where>
+
+		<trim prefix="ORDER BY">
+			<if test="sortForm != null and sortForm.sortElement != null">
+				<foreach item="item" index="x" collection="sortForm.sortElement"
+					separator=",">
+					${item.name}
+					<if test="item.asc == true">
+						ASC
+					</if>
+					<if test="item.asc != true">
+						DESC
+					</if>
+				</foreach>
+			</if>
+		</trim>
+
+		<if test="sortForm != null and sortForm.maxResult != null">
+			LIMIT ${sortForm.maxResult + 1}
+			<if test="sortForm.offset != null">
+				OFFSET ${sortForm.offset}
+			</if>
+		</if>
+	</select>
+</mapper>
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,276 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans:beans xmlns="http://www.springframework.org/schema/security"
+	xmlns:beans="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:oauth2="http://www.springframework.org/schema/security/oauth2"
+	xsi:schemaLocation="
+		http://www.springframework.org/schema/beans
+		http://www.springframework.org/schema/beans/spring-beans-4.3.xsd
+		http://www.springframework.org/schema/security
+		http://www.springframework.org/schema/security/spring-security.xsd
+		http://www.springframework.org/schema/security/oauth2
+		http://www.springframework.org/schema/security/spring-security-oauth2.xsd
+	">
+
+	<!--
+	===============================================================================
+		API
+	===============================================================================
+	-->
+
+	<!-- 強制ログイン -->
+	<http pattern="/api/login/forceLogin" use-expressions="false" entry-point-ref="Http403ForbiddenEntryPoint">
+		<csrf disabled="true" />
+		<anonymous enabled="true"/>
+
+		<intercept-url pattern="/api/login/forceLogin" access="ROLE_USER, ROLE_ADMIN, ROLE_AGENCY, ROLE_SYS_ADMIN" />
+	</http>
+
+	<http pattern="/api/**" use-expressions="false" entry-point-ref="Http403ForbiddenEntryPoint">
+		<csrf disabled="true" />
+		<anonymous enabled="true"/>
+		<custom-filter before="SESSION_MANAGEMENT_FILTER" ref="concurrentSessionManagemntFilter" />
+
+		<intercept-url pattern="/api/login/info" access="IS_AUTHENTICATED_ANONYMOUSLY" />
+
+		<intercept-url pattern="/api/usetime/searchByUserId" access="ROLE_AGENCY, ROLE_SYS_ADMIN" />
+		<intercept-url pattern="/api/usetime/searchByCompanyId" access="ROLE_AGENCY, ROLE_SYS_ADMIN" />
+		<intercept-url pattern="/api/lexicon/**" access="ROLE_ADMIN" />
+		<intercept-url pattern="/api/recaiuslicense/**" access="ROLE_SYS_ADMIN" />
+		<intercept-url pattern="/api/agency/**" access="ROLE_SYS_ADMIN" />
+		<intercept-url pattern="/api/companymanagement/getCompanySettings" access="ROLE_ADMIN" />
+		<intercept-url pattern="/api/companymanagement/updateCompanySettings" access="ROLE_ADMIN" />
+		<intercept-url pattern="/api/companymanagement/**" access="ROLE_AGENCY, ROLE_SYS_ADMIN" />
+		<intercept-url pattern="/api/speechlog/searchByCompany" access="ROLE_ADMIN" />
+		<intercept-url pattern="/api/speechlog/generateVoiceByCompany" access="ROLE_ADMIN" />
+		<intercept-url pattern="/api/speechlog/voice/**" access="ROLE_ADMIN" />
+		<intercept-url pattern="/api/speechlog/downloadFileByCompany/**" access="ROLE_ADMIN" />
+		<intercept-url pattern="/api/speechlog/delete" access="ROLE_ADMIN" />
+		<intercept-url pattern="/api/filler/**" access="ROLE_SYS_ADMIN" />
+		<intercept-url pattern="/api/password/**" access="ROLE_ADMIN" />
+
+		<intercept-url pattern="/**" access="ROLE_USER, ROLE_ADMIN, ROLE_AGENCY, ROLE_SYS_ADMIN" />
+	</http>
+
+	<!--
+		未認証時に 403 ステータスを返却する（ログイン画面に遷移しない）
+	-->
+	<beans:bean id="Http403ForbiddenEntryPoint"
+		class="org.springframework.security.web.authentication.Http403ForbiddenEntryPoint"
+	/>
+
+	<!--
+		BOT 判別フィルタ
+	-->
+	<beans:bean id="botAuthenticationFilter"
+		class="cloud.optim.aivoiceanalytics.core.modules.bot.HttpRequestAuthenticationProcessingFilter"
+	>
+		<beans:property name="userId" value="${bot.userId}" />
+		<beans:property name="authName" value="${bot.authName}" />
+
+		<beans:property name="companyIdHeaderName" value="${bot.companyIdHeaderName}" />
+		<beans:property name="userAgent" value="${bot.userId}" />
+		<beans:property name="networkAddress">
+			<beans:list>
+				<beans:value>127.0.0.1</beans:value>
+				<beans:value>::1</beans:value>
+			</beans:list>
+		</beans:property>
+	</beans:bean>
+
+	<!--
+	===============================================================================
+		オペレータサイト
+	===============================================================================
+	-->
+
+	<!-- 各種リソースは認証不要 -->
+
+	<http pattern="/ui/css/**" security="none"/>
+	<http pattern="/ui/fonts/**" security="none"/>
+	<http pattern="/ui/img/**" security="none"/>
+	<http pattern="/ui/js/**" security="none"/>
+
+	<http pattern="/ui/app/**" security="none"/>
+	<http pattern="/ui/error/**" security="none"/>
+
+	<!--
+		/ui/**, /ui/admin/**, /ui/sys/**, /**
+	-->
+	<http pattern="/**" use-expressions="false" entry-point-ref="LoginUrlAuthenticationEntryPoint">
+		<access-denied-handler ref="oauth2AccessDeniedHandler"/>
+		<csrf disabled="true" />
+		<anonymous enabled="true"/>
+		<custom-filter before="PRE_AUTH_FILTER" ref="oauth2AuthenticationFilter" />
+		<custom-filter before="SESSION_MANAGEMENT_FILTER" ref="concurrentSessionManagemntFilter" />
+
+		<intercept-url pattern="${oauth.callback}" access="IS_AUTHENTICATED_ANONYMOUSLY" />
+
+		<intercept-url pattern="/ui/sys/**" access="ROLE_SYS_ADMIN" />
+		<intercept-url pattern="/ui/admin/**" access="ROLE_ADMIN, ROLE_AGENCY, ROLE_SYS_ADMIN" />
+		<intercept-url pattern="/ui/agency/**" access="ROLE_AGENCY, ROLE_SYS_ADMIN" />
+		<intercept-url pattern="/ui/**" access="ROLE_USER, ROLE_ADMIN, ROLE_AGENCY, ROLE_SYS_ADMIN" />
+
+		<logout logout-url="/ui/logout"
+			logout-success-url="${oauth.logoutUri}"
+			invalidate-session="true"
+			delete-cookies="JSESSIONID"
+		/>
+
+		<intercept-url pattern="/**" access="IS_AUTHENTICATED_ANONYMOUSLY" />
+	</http>
+
+	<!--
+		未認証時に認証サーバのログイン画面に遷移する
+	-->
+	<beans:bean id="LoginUrlAuthenticationEntryPoint"
+		class = "org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint">
+		<beans:constructor-arg index="0" value="${oauth.callback}" />
+	</beans:bean>
+
+	<!--
+		権限不足時エラー画面に遷移する
+	-->
+	<beans:bean id="oauth2AccessDeniedHandler"
+		class="cloud.optim.aivoiceanalytics.core.modules.oauth.OAuth2AccessDeniedHandler"
+		p:errorPage="/ui/error/access-denied.html"
+	/>
+
+	<!--
+		不正アカウントエラー画面に遷移する
+	-->
+	<beans:bean id="invalidAccountHandler"
+		class="cloud.optim.aivoiceanalytics.core.modules.oauth.OAuth2AccessDeniedHandler"
+		p:errorPage="/ui/error/invalid-account.html"
+	/>
+
+	<!--
+	===============================================================================
+		OAUTH2
+			- https://spring.io/guides/tutorials/spring-boot-oauth2/
+			- https://projects.spring.io/spring-security-oauth/docs/oauth2.html
+	===============================================================================
+	-->
+
+	<!--
+		Servlet filter
+	-->
+	<oauth2:client id="oauth2ClientContextFilter" />
+
+	<!--
+		Security filter
+		※<resource-server> では OAuth2AuthenticationProcessingFilter になってしまうので NG
+	-->
+	<beans:bean id="oauth2AuthenticationFilter"
+		class="org.springframework.security.oauth2.client.filter.OAuth2ClientAuthenticationProcessingFilter"
+	>
+		<beans:constructor-arg index="0" value="${oauth.callback}" />
+
+		<beans:property name="restTemplate" ref="oauthRestTemplate"/>
+		<beans:property name="tokenServices" ref="tokenService"/>
+		<beans:property name="authenticationFailureHandler" ref="invalidAccountHandler"/>
+	</beans:bean>
+
+	<oauth2:rest-template id="oauthRestTemplate" resource="oauthResource"/>
+
+	<beans:bean id="tokenService"
+		class="cloud.optim.aivoiceanalytics.core.modules.oauth.UserInfoTokenServices">
+
+		<beans:constructor-arg index="0" value="${oauth.userInfoUri}" />
+		<beans:constructor-arg index="1" value="${oauth.clientId}" />
+
+		<beans:property name="restTemplate" ref="oauthRestTemplate"/>
+		<beans:property name="authoritiesExtractor" ref="authoritiesExtractor"/>
+	</beans:bean>
+
+	<beans:bean id="authoritiesExtractor"
+		class="cloud.optim.aivoiceanalytics.core.modules.oauth.AuthoritiesExtractor">
+		<beans:property name="adminRoleList" value="${oauth.adminRoleList}"/>
+		<beans:property name="sysRoleList" value="${oauth.sysRoleList}"/>
+	</beans:bean>
+
+	<oauth2:resource id="oauthResource"
+		client-id="${oauth.clientId}"
+		client-secret="${oauth.clientSecret}"
+		user-authorization-uri="${oauth.userAuthorizationUri}"
+		access-token-uri="${oauth.accessTokenUri}"
+		token-name="access_token"
+		client-authentication-scheme="form"
+
+		type="authorization_code"
+	/>
+
+	<!--
+	===============================================================================
+		その他
+	===============================================================================
+	-->
+
+	<!-- 多重ログイン制御フィルター -->
+	<beans:bean id="concurrentSessionManagemntFilter" class="cloud.optim.aivoiceanalytics.core.modules.session.ConcurrentSessionManagemntFilter">
+		<beans:property name="redirectUrl" value="/ui/error/concurrent-login.html" />
+	</beans:bean>
+
+	<!--
+		ダミー
+		※authenticationManager が 1 つもないと起動時にエラーが発生してしまうので記述が必要
+	-->
+	<authentication-manager id="authenticationManager"/>
+
+	<!--
+		========================================================================
+
+		IPアドレスフィルター 指定範囲の IP アドレスからのアクセスのみ許可する.
+
+		ipProcessingFilter/securityMetadataSource :	IP 制限したい URL を記述
+		networkIpChannelProcessor :	アクセスを許可する IP アドレス範囲を CIDR 形式で記述
+
+		※指定した URL には、指定した IP アドレスからのみアクセス可能
+
+		※アドレスの記述例）
+
+			192.168.0.1		← 1 ホストのみ許可
+			192.168.0.1/32	← 1 ホストのみ許可
+			192.168.0.0/24　← 192.168.0.1～254 を許可
+			fe80::/48
+			::1
+	<beans:bean id="ipProcessingFilter" class="org.springframework.security.web.access.channel.ChannelProcessingFilter">
+		<beans:property name="channelDecisionManager"><beans:ref local="ipDecisionManager"/></beans:property>
+		<beans:property name="securityMetadataSource">
+			<filter-security-metadata-source request-matcher="ant">
+
+				<intercept-url pattern="/**" access="REQUIRES_NETWORK_ADDRESS_CHANNEL" />
+
+			</filter-security-metadata-source>
+		</beans:property>
+	</beans:bean>
+
+	<beans:bean id="ipDecisionManager" class="org.springframework.security.web.access.channel.ChannelDecisionManagerImpl">
+		<beans:property name="channelProcessors">
+			<beans:list><beans:ref local="networkIpChannelProcessor"/></beans:list>
+		</beans:property>
+	</beans:bean>
+
+	<beans:bean id="networkIpChannelProcessor" class="com.nextserve.core.common.security.NetworkAddressChannelProcessor">
+		<beans:property name="remoteipKeyword">
+
+			<beans:value>REQUIRES_NETWORK_ADDRESS_CHANNEL</beans:value>
+
+		</beans:property>
+		<beans:property name="redirectUrl">
+			<beans:value>/IPerror.jsp</beans:value>
+		</beans:property>
+		<beans:property name="networkAddress">
+			<beans:list>
+
+				<beans:value>10.34.203.0/24</beans:value>
+				<beans:value>10.34.201.254</beans:value>
+				<beans:value>127.0.0.1</beans:value>
+
+			</beans:list>
+		</beans:property>
+	</beans:bean>
+	-->
+</beans:beans>

@@ -1,0 +1,310 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app version="3.1"
+	xmlns="http://xmlns.jcp.org/xml/ns/javaee"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee
+                      http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd"
+	id="WebApp_ID"
+>
+<!-- ======================================================================= -->
+<!--  web.xml                                                                -->
+<!-- ======================================================================= -->
+
+	<display-name>AIVoiceanAlytics</display-name>
+	<description>AIボイスアナリティクスAPI基盤</description>
+
+
+	<!-- ============================================ Context-Parameter 定義 -->
+
+	<!--
+		[Spring Framework]
+	-->
+	<context-param>
+		<description>アプリケーションコンテキスト設定ファイル</description>
+
+		<param-name>contextConfigLocation</param-name>
+		<param-value>
+			/WEB-INF/classes/**/*.context.xml;
+			/WEB-INF/conf/**/*.context.xml;
+			classpath*:META-INF/*.context.xml
+		</param-value>
+	</context-param>
+
+	<!--
+		[RESTEasy]
+	-->
+	<context-param>
+		<description>
+			servlet-mapping が /* でない場合に必要
+			[ If the url-pattern for the Resteasy servlet-mapping is not /* ]
+		</description>
+
+		<param-name>resteasy.servlet.mapping.prefix</param-name>
+		<param-value>/api</param-value>
+	</context-param>
+
+
+
+
+
+	<!-- =====================================================  Listner 定義 -->
+
+	<!--
+		[RESTEasy]
+	-->
+	<listener>
+		<listener-class>
+			org.jboss.resteasy.plugins.server.servlet.ResteasyBootstrap
+		</listener-class>
+	</listener>
+
+	<!--
+		[Spring Framework] / [RESTEasy]
+	-->
+	<listener>
+		<description>Springコンテキスト読込リスナ（RESTEasy 連携用）</description>
+		<listener-class>
+			org.jboss.resteasy.plugins.spring.SpringContextLoaderListener
+		</listener-class>
+	</listener>
+
+	<!--
+		[Spring Framework]
+	<listener>
+		<description>
+			Springコンテキスト読込リスナ
+			（RESTEasy 不要の場合はこちらを使用）
+		</description>
+		<listener-class>
+			org.springframework.web.context.ContextLoaderListener
+		</listener-class>
+	</listener>
+	-->
+
+
+
+	<!--
+		[Spring Framework]
+	-->
+	<listener>
+		<description>
+			Springリクエストコンテキストリスナ
+			（後方互換用　将来はCDIに移行）
+		</description>
+		<listener-class>org.springframework.web.context.request.RequestContextListener</listener-class>
+	</listener>
+
+
+	<!--
+		[Spring Security]
+	-->
+	<listener>
+		<listener-class>org.springframework.security.web.session.HttpSessionEventPublisher</listener-class>
+	</listener>
+    <listener>
+    	<description>多重ログイン制御</description>
+		<listener-class>cloud.optim.aivoiceanalytics.core.modules.session.CustomSessionEventListener</listener-class>
+	</listener>
+
+	<!--
+		[AIVoiceanAlytics]
+	<listener>
+		<description>Webアプリケーションの起動／シャットダウン監視リスナ</description>
+		<listener-class>cloud.optim.aivoiceanalytics.core.common.listener.ServletContextListenerImpl</listener-class>
+	</listener>
+	-->
+
+
+
+	<!--
+		[AIVoiceanAlytics]
+	<listener>
+		<description>HTTPセッション監視リスナ</description>
+		<listener-class>cloud.optim.aivoiceanalytics.core.common.listener.HttpSessionListenerImpl</listener-class>
+	</listener>
+	-->
+
+
+
+	<!--
+		[AIVoiceanAlytics]
+	-->
+	<listener>
+		<description>Tomcat 終了時に出力されるエラーログ対処リスナ</description>
+		<listener-class>cloud.optim.aivoiceanalytics.core.common.listener.ShutdownListener</listener-class>
+	</listener>
+
+
+
+	<!-- ======================================================  Filter 定義 -->
+
+	<!--
+		[Spring Framework]
+	-->
+	<filter>
+		<description>文字エンコーディングフィルター設定</description>
+
+		<filter-name>SetCharacterEncodingUTF-8</filter-name>
+		<filter-class>org.springframework.web.filter.CharacterEncodingFilter</filter-class>
+		<init-param>
+			<param-name>encoding</param-name>
+			<param-value>UTF-8</param-value>
+		</init-param>
+		<init-param>
+			<param-name>forceEncoding</param-name>
+			<param-value>true</param-value>
+		</init-param>
+	</filter>
+
+	<filter-mapping>
+		<filter-name>SetCharacterEncodingUTF-8</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+
+	<!--
+		[Spring Security OAuth2 Client]
+	-->
+	<filter>
+		<filter-name>oauth2ClientContextFilter</filter-name>
+		<filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
+	</filter>
+
+	<filter-mapping>
+		<filter-name>oauth2ClientContextFilter</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+
+	<!--
+		[Spring Security]
+	-->
+	<filter>
+		<filter-name>springSecurityFilterChain</filter-name>
+		<filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
+	</filter>
+
+	<filter-mapping>
+		<filter-name>springSecurityFilterChain</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+
+	<!--
+		[Log4J]
+	-->
+	<filter>
+		<description>追加情報ログ出力フィルター</description>
+
+		<filter-name>MDCLogFilter</filter-name>
+		<filter-class>cloud.optim.aivoiceanalytics.core.modules.filter.MappedDiagnosticContextLogFilter</filter-class>
+	</filter>
+
+	<filter-mapping>
+		<filter-name>MDCLogFilter</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+
+
+
+	<!--
+		[RESTEasy]
+		※API と同じパス以下に静的なコンテンツを配置する場合は、
+		　servlet でなくこちらを使用する.
+	-->
+	<filter>
+		<filter-name>Resteasy</filter-name>
+		<filter-class>org.jboss.resteasy.plugins.server.servlet.FilterDispatcher</filter-class>
+	</filter>
+
+	<filter-mapping>
+		<filter-name>Resteasy</filter-name>
+		<url-pattern>/api/*</url-pattern>
+	</filter-mapping>
+
+
+
+
+
+	<!-- ====================================================== Servlet 定義 -->
+
+	<!--
+		[RESTEasy]
+		※API と同じパス以下に静的なコンテンツを配置しない場合は、
+		　filter でなくこちらを使用してもよい.
+	<servlet>
+		<servlet-name>Resteasy</servlet-name>
+		<servlet-class>
+			org.jboss.resteasy.plugins.server.servlet.HttpServletDispatcher
+		</servlet-class>
+	</servlet>
+
+	<servlet-mapping>
+		<servlet-name>Resteasy</servlet-name>
+		<url-pattern>/api/*</url-pattern>
+	</servlet-mapping>
+	-->
+
+
+
+
+
+	<!-- ============================================================ その他 -->
+
+	<!--
+		セッションタイムアウト時間(分)
+	-->
+	<session-config>
+		<session-timeout>30</session-timeout>
+	</session-config>
+
+
+
+	<welcome-file-list>
+		<welcome-file>index.html</welcome-file>
+	</welcome-file-list>
+
+
+
+	<!--
+		エラーページ設定.
+
+		400:クライアントエラー
+		401:認証失敗
+		403:アクセス権限なし
+		404:ページなし
+		405:メソッド違い
+		500:サーバ内部問題
+	-->
+	<!--
+		[AIVoiceAnalytics]
+			※405 は RestEasy に横取りされてしまうので実際には効いていない
+			※400、500 をリダイレクトしてしまうと Ajax での API 呼び出しにも影響があるので指定しない
+			　（400 については 405 と同様に RestEasy に横取りされてしまう）
+			※認証周りは SpringSecurity で管理しているのでここでは処理しない
+	-->
+	<error-page>
+		<error-code>404</error-code>
+		<location>/ui/error/redirect.jsp</location>
+	</error-page>
+	<error-page>
+		<error-code>405</error-code>
+		<location>/ui/error/redirect.jsp</location>
+	</error-page>
+	<!--
+	<error-page>
+		<error-code>400</error-code>
+		<location>/ui/error/redirect.jsp</location>
+	</error-page>
+	<error-page>
+		<error-code>401</error-code>
+		<location>/ui/error/redirect.jsp</location>
+	</error-page>
+	<error-page>
+		<error-code>403</error-code>
+		<location>/ui/error/redirect.jsp</location>
+	</error-page>
+	<error-page>
+		<error-code>500</error-code>
+		<location>/ui/error/redirect.jsp</location>
+	</error-page>
+	-->
+
+</web-app>

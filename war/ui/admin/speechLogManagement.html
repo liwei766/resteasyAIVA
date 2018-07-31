@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<!-- head -->
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport"
+	content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="description" content="Analyze Manager">
+<meta name="author" content="Optim">
+<link rel="shortcut icon" href="../img/favicon.png">
+<title>AI Voice Analytics</title>
+
+<!-- Main styles for this application -->
+<link href="../css/style.css" rel="stylesheet">
+<link href="../css/ccs.css" rel="stylesheet">
+</head>
+<!-- /head -->
+
+<body class="app footer-fixed">
+
+	<!-- loading-spinner -->
+	<div id="loading-bar-spinner">
+		<div class="spinner-icon"></div>
+	</div>
+	<!-- /loading-spinner -->
+
+	<!-- modal-panel -->
+	<div id="dialog" class="modal align-middle fade bd-example-modal-lg"
+		tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel"
+		aria-hidden="true"></div>
+	<!-- /modal-panel -->
+
+	<!-- header -->
+	<header id="navBar"
+		class="app-header navbar d-flex justify-content-end ccs-navbar"></header>
+	<!-- /header -->
+
+	<!-- app-body -->
+	<div class="app-body overflow-y-hidden">
+
+		<!-- main -->
+		<main class="main"> <!-- container -->
+		<div class="container-fluid animated fadeIn h-100">
+			<div class="d-flex h-100">
+
+				<!-- list -->
+				<div class="col-lg-8 no-padding h-100">
+					<div class="card border-left-0 h-100 ccs-admin-left-pane">
+
+						<div class="card-header d-flex justify-content-start h1-header">
+							<div class="h4 text-muted text-right mr-1 mb-0">
+								<i class="fa fa-edit" aria-hidden="true"></i>
+							</div>
+							<div class="mr-auto p-2">音声解析履歴管理</div>
+
+							<!-- search-bar -->
+							<div class="ml-auto">
+								<span class="mx-3">日付選択</span>
+							</div>
+							<div class="calender float-right">
+								<input id="inputDate" maxlength="10" type="date"
+									placeholder="yyyy-mm-dd">
+							</div>
+							<!-- /search-bar -->
+
+							<div class="ml-auto">
+								<span class="ml-3">利用者名</span>
+							</div>
+							<div class="col-lg-4">
+								<div class="input-group">
+									<input type="text" id="inputSearch"
+										class="form-control ccs-with-button" maxlength="100"
+										placeholder="利用者名検索" aria-label="Search for..."> <span
+										class="input-group-btn">
+										<button id="search" class="btn btn-primary mb-0" type="button">検索</button>
+									</span>
+								</div>
+							</div>
+						</div>
+
+						<div class="row ccs-admin-warn-area" id="searchMsgParent"
+							hidden="hidden">
+							<div class="col-lg-12 h-100 bg-warning d-flex align-items-center">
+								<label id="searchMsg" class="text-center w-100"></label>
+							</div>
+						</div>
+
+						<div id="table-scroll" class="table-scroll ccs-list-table">
+							<div id="t1" class="scroll-wrap"></div>
+							<div class="inner-wrap t2 border-0">
+								<table id="main-table" class="main-table">
+									<thead>
+										<tr>
+											<th class="min-w-120">解析番号
+												<button type="button" class="btn-xs btn-link">
+													<i id="sortNo" class="text-white fa fa-sort"></i>
+												</button>
+											</th>
+											<th>種別
+												<button type="button" class="btn-xs btn-link">
+													<i id="sortSpeechType" class="text-white fa fa-sort"></i>
+												</button>
+											</th>
+											<th class="min-w-120">利用日時
+												<button type="button" class="btn-xs btn-link">
+													<i id="sortDate" class="text-white fa fa-sort"></i>
+												</button>
+											</th>
+											<th class="min-w-120">利用者名
+												<button type="button" class="btn-xs btn-link cursor-default">
+													<i id="sortUserName" class="fa fa-sort color-transparent"></i>
+												</button>
+											</th>
+										</tr>
+									</thead>
+									<tbody>
+									</tbody>
+								</table>
+							</div>
+							<!-- /t2 -->
+						</div>
+						<!-- /table-scroll -->
+
+					</div>
+					<!-- /card -->
+				</div>
+				<!-- /list -->
+
+				<!-- answer -->
+				<div class="col-lg-4 no-padding h-100 ccs-admin-right-pane">
+					<div class="card border-left-0 border-right-0 h-100 card-height">
+						<div class="no-padding ccs-edit-log-area  h-100">
+							<div class="card h-100 border-left-0 border-top-0 border-right-0">
+
+								<div
+									class="card-header d-flex justify-content-start border-bottom-0 pb-0">
+									<button class="btn btn-primary rennzoku" type="button"
+										id="continuousPlay">連続再生</button>
+									<button class="btn btn-danger mx-2 stop" type="button"
+										id="stopPlay">停止</button>
+									<span class="ml-auto text-right"> <strong>
+										<p id="dispNo" style="margin-bottom: 0;"></p>
+										<p id="fileName" style="margin-bottom: 0; height: 17px;width: 220px;"></p></strong>
+									</span>
+								</div>
+
+								<div class="card-block h-100">
+									<div id="dispLog"
+										class="form-control form-control_edit noresize py-4 ccs-edit-log card h-100 border-top-0 border-left-0 border-right-0">
+										<form></form>
+									</div>
+								</div>
+
+								<!-- Card footer -->
+								<div class="card ccs-card-footer">
+									<div class="card-footer d-flex align-items-center"  style="flex-shrink:1;">
+										<button id="exportFile" class="btn btn-primary my-0 ml-auto">ファイル出力</button>
+										<button id="update" class="btn btn-primary my-0 ml-3">更新</button>
+										<button id="delete" class="btn btn-danger my-0 ml-3">削除</button>
+									</div>
+								</div>
+								<!-- /Card footer -->
+
+							</div>
+						</div>
+					</div>
+					<!-- /card-body -->
+				</div>
+				<!-- /answer -->
+
+			</div>
+		</div>
+		<!-- /container --> </main>
+		<!-- /main -->
+
+	</div>
+	<!-- /app-body -->
+
+	<!-- footer-->
+	<footer class="app-footer">
+		<!-- <span class="float-right">© 2017 Optim</span> -->
+	</footer>
+	<!-- /footer -->
+
+	<!-- script -->
+
+	<!-- Bootstrap and necessary plugins -->
+	<script src="../js/libs/jquery.min.js"></script>
+	<script src="../js/libs/tether.min.js"></script>
+	<script src="../js/libs/bootstrap.min.js"></script>
+	<script src="../js/libs/pace.min.js"></script>
+
+	<!-- GenesisUI main scripts -->
+	<script src="../js/main.js"></script>
+
+	<!-- AIVoiceAnalytics Application -->
+	<script src="../app/common/ccs.js"></script>
+	<script src="../app/common/util.js"></script>
+	<script src="../app/common/prop.js"></script>
+	<script src="../app/common/view.js"></script>
+	<script src="../app/common/api.js"></script>
+	<script src="../app/common/auth.js"></script>
+	<script src="../app/common/user.js"></script>
+
+	<script src="../app/layout.js"></script>
+	<script src="../app/speechLogMngByComp.js"></script>
+
+	<!-- /script -->
+
+</body>
+
+</html>

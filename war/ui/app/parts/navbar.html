@@ -1,0 +1,44 @@
+      <div class="mr-auto mx-3">
+        <span>AI Voice Analytics</span>
+      </div>
+
+  <!-- nav right -->
+  <ul class="nav navbar-nav">
+
+    <!-- nav info -->
+    <span>ID:</span>
+    <li class="nav-item px-2">
+      <a class="nav-link text-white" href="#">
+        <span id="navUserId"></span>
+      </a>
+    </li>
+    <li hidden="hidden" class="nav-item px-4">
+      <a class="nav-link text-white" href="#">
+        <span id="navUserName"></span>
+      </a>
+    </li>
+    <!-- /nav info -->
+
+    <!-- Admin dropdown -->
+    <li class="nav-item dropdown" id="dropdown">
+      <div class="dropdown-menu dropdown-menu-right">
+        <p class="dropdown-item">当月利用時間：<span id="allUseTime"></span></p>
+      	<a class="dropdown-item" id="navSpeech"  href=""><i class="fa fa-microphone text-gray-dark"></i>音声解析</a>
+      	<a class="dropdown-item" id="navLicense" href="" data-ccs-rule="ROLE_SYS_ADMIN"><i class="fa fa-file-text-o text-gray-dark"></i>ライセンス管理</a>
+      	<a class="dropdown-item" id="navAgencyManagement" href="" data-ccs-rule="ROLE_SYS_ADMIN"><i class="fa fa-group text-gray-dark"></i>代理店管理</a>
+      	<a class="dropdown-item" id="navCompanyManagement" href="" data-ccs-rule="ROLE_AGENCY"><i class="fa fa-building text-gray-dark"></i>企業管理</a>
+      	<a class="dropdown-item" id="navUsetime" href="" data-ccs-rule="ROLE_AGENCY"><i class="fa fa-clock-o text-gray-dark"></i>利用時間確認</a>
+   		<a class="dropdown-item" id="navLexicon"  href="" data-ccs-rule="ROLE_ADMIN"><i class="fa fa-graduation-cap text-gray-dark"></i>ユーザ辞書管理</a>
+   		<a class="dropdown-item" id="navCompanySetting"  href="" data-ccs-rule="ROLE_ADMIN"><i class="fa fa-wrench text-gray-dark"></i>企業設定</a>
+   		<a class="dropdown-item" id="navFiller"  href="" data-ccs-rule="ROLE_SYS_ADMIN"><i class="fa fa-eraser text-gray-dark"></i>フィラー情報管理</a>
+   		<a class="dropdown-item" id="navSpeechLogManagementByCompany"  href="" data-ccs-rule="ROLE_ADMIN"><i class="fa fa-edit text-gray-dark"></i>音声解析履歴管理</a>
+		<a class="dropdown-item" id="navSpeechLogManagementByUser"  href="" data-ccs-notrule="ROLE_ADMIN"><i class="fa fa-edit text-gray-dark"></i>音声解析履歴管理</a>
+		<a class="dropdown-item" id="navPassword"  href="" data-ccs-rule="ROLE_ADMIN"><i class="fa fa-key text-gray-dark"></i>パスワード管理</a>
+        <a class="dropdown-item" href="#" id="logout"><i class="fa fa-lock text-gray-dark" ></i>ログアウト</a>
+      </div>
+      <a class="nav-link dropdown-toggle text-white" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false" id="dropdown-toggle"></a>
+    </li>
+    <!-- /Admin dropdown -->
+
+  </ul>
+  <!-- nav right -->

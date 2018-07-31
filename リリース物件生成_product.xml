@@ -1,0 +1,222 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="AIVoiceAnalytics" default="main" basedir=".">
+
+	<!--
+	 - war ファイル作成 ANT スクリプト.
+	 - [localhost] 開発 担当者用
+	-->
+
+	<!--
+	 - 【プロパティ解説】
+	 -	branch	リリース先の識別名.
+	 -			WAR 作成先のフォルダ名、環境別ファイル名の一部、MANIFEST 等に使用します.
+	 -			例）
+	 -				(無印)		開発 担当者用(localhost)
+	 -				staging		検証環境
+	 -				product		本番環境
+	 -
+	 -	project WAR ファイル名（ルートコンテキスト名）.
+	-->
+	<property name="branch"       value="product"/>
+	<property name="project"      value="AIVoiceAnalytics"/>
+	<property name="version"      value="0.0.1"/>
+	<property name="vendor"       value="OPTiM"/>
+
+	<property name="build.conf"   value="WEB-INF/conf"/>
+	<property name="build.lib"    value="WEB-INF/lib"/>
+	<property name="build.bin"    value="WEB-INF/classes"/>
+
+	<property name="build.dest"   value="release-${branch}"/>
+	<property name="war.name"     value="${project}" />
+	<property name="war.file"     value="${project}.war" />
+
+	<property name="properties"		value="properties"/>
+
+	<property name="javadoc.dest" value="doc"/>
+	<property name="javadoc.copyright" value="Copyright (C) 2006-2013"/>
+	<property name="javadoc.reserved"  value=". All rights reserved."/>
+
+	<property name="js.root"		value="ui"/>
+	<!--
+	<property name="js.lib.root"	value="ui/common/nextserve/lib"/>
+	<property name="js.lib.min"		value="ui/common/nextserve/lib.min"/>
+
+	<property name="jsmin" value="tools/jsmin/jsmin.exe"/>
+	-->
+	<tstamp>
+		<format property="GENERATE_TSTAMP" pattern="yyyy/MM/dd hh:mm:ss"/>
+	</tstamp>
+
+	<!--
+	 - コンパイルも行う場合はここをアンコメントします.
+	 - ただし、servlet-api.jar のパスについてはプロジェクトごとに指定してください.
+	<path id="project.class.path">
+		<pathelement location="./ant/lib/servlet-api.jar"/>
+		<fileset dir="war/${build.lib}">
+			<include name="*.jar"/>
+		</fileset>
+	</path>
+
+	<target name="compile">
+		<delete dir="war/${build.bin}"/>
+		<mkdir dir="war/${build.bin}"/>
+		<javac
+			target="1.7"
+			srcdir="src"
+			destdir="war/${build.bin}"
+			includes="**/*.properties,**/*.java,**/*.xml"
+			debug="off"
+			classpathref="project.class.path"/>
+	</target>
+	-->
+
+	<!-- ビルド先クリア -->
+
+	<target name="prepare">
+		<delete dir="${build.dest}"/>
+		<mkdir dir="${build.dest}"/>
+	</target>
+
+	<!-- リソースをコピー -->
+
+	<target name="package" depends="prepare">
+
+		<copy todir="${build.dest}/${war.name}">
+			<fileset dir="war" includes="*.*" excludes=".*,*.xml"/>
+
+			<fileset dir="war" includes="ui/**/*.*" />
+			<fileset dir="war" includes="WEB-INF/web*.xml"/>
+			<fileset dir="war" includes="WEB-INF/conf/**/*.*"/>
+			<fileset dir="war" includes="WEB-INF/classes/**/*.*" excludes="**/test/**/*.*"/>
+		</copy>
+
+		<copy todir="${build.dest}/libs">
+			<fileset dir="war" includes="WEB-INF/lib/**/*.*"/>
+		</copy>
+
+	</target>
+
+	<target name="rename" depends="package">
+
+		<!-- ========== 各種設定ファイルを個別環境用に置き換え ========== -->
+
+		<!--
+		 - localhost ではデフォルトファイルをそのまま使用するので置き換えは行いません.
+		 - 一般的に、以下のファイルは環境ごとに異なりますので適宜アンコメント・修正して.
+		 - ご利用下さい.
+		-->
+
+		<!--
+		<move overwrite="true"
+		 file  ="${build.dest}/${war.name}/WEB-INF/web-${branch}.xml"
+		 tofile="${build.dest}/${war.name}/WEB-INF/web.xml"/>
+		-->
+		<delete>
+			<fileset dir="${build.dest}/${war.name}/WEB-INF"
+			 includes="web-*.xml"/>
+		</delete>
+
+
+		<copy overwrite="true"
+		 file  ="${properties}/${branch}/log4j.xml"
+		 tofile="${build.dest}/${war.name}/${build.bin}/log4j.xml"/>
+
+		<delete>
+			<fileset dir="${build.dest}/${war.name}/${build.bin}"
+			 includes="log4j-*.xml"/>
+		</delete>
+
+		<copy overwrite="true"
+		 file  ="${properties}/${branch}/jdbc.properties"
+		 tofile="${build.dest}/${war.name}/${build.bin}/jdbc.properties"/>
+
+		<delete>
+			<fileset dir="${build.dest}/${war.name}/${build.bin}"
+			 includes="jdbc-*.properties"/>
+		</delete>
+
+
+		<copy overwrite="true"
+		 file  ="${properties}/${branch}/application.properties"
+		 tofile="${build.dest}/${war.name}/${build.bin}/application.properties"/>
+
+		<delete>
+			<fileset dir="${build.dest}/${war.name}/${build.bin}"
+			 includes="application-*.properties"/>
+		</delete>
+
+		<!--
+		<native2ascii encoding="SJIS" reverse="true"
+			src="${build.dest}/${war.name}/${build.bin}"
+			dest="${build.dest}/${war.name}/${build.bin}"
+			includes="application*.properties" ext=".properties_sjis" />
+		-->
+
+	</target>
+
+	<target name="minimize" depends="rename">
+
+		<!-- ========== スクリプトファイルを minimize 版に置き換え ========== -->
+
+		<!-- lib 以外の *.js ファイルを minimize 処理 -->
+
+		<apply executable="${jsmin}" addsourcefile="false" relative="true">
+			<arg value="${javadoc.copyright}, ${vendor}${javadoc.reserved}"/>
+			<fileset dir="."
+				includes="${build.dest}/${war.name}/${js.root}/**/*.js"
+				excludes="**/*.min.js, ${build.dest}/${war.name}/${js.lib.root}/**/*.*, ${build.dest}/${war.name}/${js.lib.min}/**/*.*"
+			/>
+
+			<redirector>
+				<inputmapper type="glob" from="*" to="*"/>
+				<outputmapper id="out" type="glob" from="*.js" to="*.min.js"/>
+			</redirector>
+		</apply>
+
+		<!-- 作成した *.min.js を *.js にリネーム（オリジナルファイルを上書きする） -->
+
+		<move overwrite="true" todir="${build.dest}/${war.name}" verbose="true">
+			<mapper type="glob" from="*.min.js" to="*.js" />
+			<fileset dir="${build.dest}/${war.name}"
+				includes="${js.root}/**/*.min.js" excludes="${js.lib.root}/**/*, ${js.lib.min}/**/*"
+			/>
+		</move>
+
+		<!-- lib を lib.min で上書き -->
+
+		<move overwrite="true" todir="${build.dest}/${war.name}/${js.lib.root}" verbose="true">
+			<fileset dir="${build.dest}/${war.name}/${js.lib.min}"
+			/>
+		</move>
+
+	</target>
+
+	<!-- war 作成 -->
+
+	<target name="war" depends="rename">
+
+		<jar destfile="${build.dest}/${war.file}" basedir="${build.dest}/${war.name}">
+			<manifest>
+				<attribute name="Specification-Title"   value="${project} ( ${branch} )"/>
+				<attribute name="Specification-Version" value="${version} ( ${GENERATE_TSTAMP} )"/>
+				<attribute name="Specification-Vendor"  value="${vendor}."/>
+			</manifest>
+		</jar>
+
+		<jar destfile="${build.dest}/libs.war" basedir="${build.dest}/libs/WEB-INF/lib">
+			<manifest>
+				<attribute name="Specification-Title"   value="${project} ( ${branch} )"/>
+				<attribute name="Specification-Version" value="${version} ( ${GENERATE_TSTAMP} )"/>
+				<attribute name="Specification-Vendor"  value="${vendor}."/>
+			</manifest>
+		</jar>
+
+	</target>
+
+	<!-- メイン -->
+
+	<target name="main">
+		<antcall target="war"/>
+	</target>
+
+</project>

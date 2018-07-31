@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<!-- head -->
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport"
+	content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="description" content="Analyze Manager">
+<meta name="author" content="Optim">
+<link rel="shortcut icon" href="../img/favicon.png">
+<title>AI Voice Analytics</title>
+
+<!-- Main styles for this application -->
+<link href="../css/style.css" rel="stylesheet">
+<link href="../css/ccs.css" rel="stylesheet">
+
+</head>
+
+<!-- /head -->
+
+<body class="app footer-fixed">
+	<!-- dev:invisible 追加 -->
+
+	<!-- modal-panel -->
+	<div id="dialog" class="modal align-middle fade bd-example-modal-lg"
+		tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel"
+		aria-hidden="true">
+	</div>
+	<!-- /modal-panel -->
+
+	<!-- header -->
+	<header id="navBar" class="app-header navbar d-flex justify-content-end ccs-navbar"></header>
+	<!-- /header -->
+
+	<!-- app-body -->
+	<div class="app-body">
+
+		<!-- main -->
+		<div class="main"> <!-- container -->
+		<div class="container-fluid animated fadeIn h-100">
+
+			<div class="card-header d-flex justify-content-start h1-header">
+				<div class="h4 text-muted text-right mr-1 mb-0">
+					<i class="fa fa-graduation-cap" aria-hidden="true"></i>
+				</div>
+				<div class="p-2">ユーザ辞書管理</div>
+			</div>
+
+			<div style="margin-top: 20px; margin-left: 20px; margin-right: 50%;">
+				<h5>ユーザ辞書登録</h5>
+				<div id="updateForm" class="card-block ">
+					<form>
+
+						<input id="fileName" type="file" style="display: none"
+							accept=".csv,.CSV,text/csv">
+						<div class="input-group">
+							<span class="input-group-btn"><button type="button"
+									class="btn btn-primary" onclick="$('#fileName').click();">ファイル選択</button></span>
+							<input type="text" id="photoCover" class="form-control ccs-with-button" readonly
+								placeholder="csvファイルを選択...">
+						</div>
+						<br>
+						<div class="modal-footer pull-left">
+							<button type="button" id="update" class="btn btn-md btn-primary"
+								style="float: left">登録する</button>
+						</div>
+					</form>
+				</div>
+				<div id="message" hidden="hidden"></div>
+				<hr style="border: 1px solid silver">
+
+				<h5>ユーザ辞書出力（CSV形式）</h5>
+				<div id="exportForm" class="card-block  ">
+					<form>
+						<div class="modal-footer pull-left">
+							<button type="button" id="exportFile"
+								class="btn btn-md btn-primary">出力する</button>
+						</div>
+					</form>
+				</div>
+				<div id="messageExp" hidden="hidden"></div>
+				<hr style="border: 1px solid silver">
+			</div>
+
+		</div>
+		<!-- /container --> </div>
+		<!-- /main -->
+	</div>
+	<!-- /app-body -->
+
+	<!-- footer-->
+	<footer class="app-footer">
+		<!-- <span class="float-right">© 2017 Optim</span> -->
+	</footer>
+
+	<!-- script -->
+	<!-- Bootstrap and necessary plugins -->
+	<script src="../js/libs/jquery.min.js"></script>
+	<script src="../js/libs/tether.min.js"></script>
+	<script src="../js/libs/bootstrap.min.js"></script>
+	<script src="../js/libs/pace.min.js"></script>
+
+	<!-- aivoiceanalytics Application -->
+	<script src="../app/common/ccs.js"></script>
+	<script src="../app/common/util.js"></script>
+	<script src="../app/common/prop.js"></script>
+	<script src="../app/common/view.js"></script>
+	<script src="../app/common/api.js"></script>
+	<script src="../app/common/auth.js"></script>
+	<script src="../app/common/user.js"></script>
+
+	<script src="../app/layout.js"></script>
+	<script src="../app/lexicon.js"></script>
+	<!-- /script -->
+
+</body>
+
+</html>
