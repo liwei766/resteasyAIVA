@@ -1,0 +1,305 @@
+su
+rootのパスワード入力してrootユーザに切替
+
+ java.securityファイルの場所
+ /etc/alternatives/jre/lib/security/
+ 
+##################################################################
+ 修正ファイル：
+ cd /opt/tomcat/bin/
+ vi catalina.sh
+ 修正内容：
+ ファイルの一番上のところで下記の内容追加
+ export CATALINA_OPTS="-Xms2048M -Xmx2048M -Xmn512M"
+ 
+ cd /etc/
+ vi my.cnf
+ 修正内容：
+ 
+ [mysqld]
+character-set-server=utf8mb4            ⇒ utf8→utf8mb4
+collation-server = utf8mb4_general_ci   ⇒ utf8→utf8mb4
+lower_case_table_names=1                ⇒0→1
+・・・
+[client]
+default-character-set=utf8mb4           ⇒ utf8→utf8mb4
+
+MySQL DDL ファイル転送
+ cd /home/fsi
+  schema-create.sqlを転送
+ cd /var
+ cp /home/fsi/schema-create.sql .
+ 
+ ＭｙSQL再起動
+ crm resource restart mysqld
+ MySQL設定変更確認
+ mysql -u root -p
+ show variables like '%char%';
+ 
+ ・新たにスキーマを作成
+ create database ava;
+ use ava;
+ ・DDLファイルを使いテーブルの追加
+ source /var/schema-create.sql
+ describe tbl_t_use_time;
+ 
+ 3．ユーザの追加と権限の設定
+ grant select, insert, update, delete on ava.* to 'ava_user'@'localhost' identified by 'QR9hVQ8#3i';
+ flush privileges;
+ select Host, User from mysql.user;
+ show GRANTS FOR 'ava_user'@'localhost';
+ 
+ DDLファイルの削除
+  rm /var/schema-create.sql
+ 
+#######################Web01作業###################################
+【冗長化構成の状態確認】
+cat /proc/drbd
+
+./home/fsi/ディレクトリに下記のディレクトリを作成する。
+cd /home/fsi/
+mkdir work
+cd work
+mkdir release
+cd release
+mkdir 20180129
+cd 20180129
+
+ファイル転送
+lib.war
+AIVoiceAnalytics.jar
+
+mkdir DDL
+cd DDL
+ファイル転送
+schema-create.sql
+schema-drop.sql
+
+rootユーザに切替
+su
+
+リリース配置ディレクトリ作成      
+cd /usr
+mkdir aivoiceanalytics　
+cd aivoiceanalytics
+mkdir webapp
+cd webapp
+mkdir AIVoiceAnalytics
+cd AIVoiceAnalytics
+
+cp /home/fsi/work/release/20180129/AIVoiceAnalytics.war ./
+
+　jar xvf AIVoiceAnalytics.war
+  mv AIVoiceAnalytics.war ../
+  
+  mkdir lib
+  cd lib
+  cp /home/fsi/work/release/20180129/libs.war ./  
+  jar xvf libs.war
+  rm libs.war
+  rm -rf META-INF
+  
+  cd /usr/aivoiceanalytics
+  mkdir work  ⇒/opt/tomcat/conf/Catalina/localhost/AIVoiceAnalytics.xmlに利用
+  mkdir logs  ⇒ログ出力
+  mkdir tmp	  ⇒recaius.speech.work.directory = /usr/aivoiceanalytics/tmp/audio
+  cd tmp
+  mkdir audio
+  
+  cd /home/fsi
+  AIVoiceAnalytics.xmlファイル転送
+  mv AIVoiceAnalytics.xml /opt/tomcat/conf/Catalina/localhost/.
+  
+  AIVoiceAnalytics.xml内容：
+  <Context path="/aivoiceanalytics" reloadable="true" docBase="/usr/aivoiceanalytics/webapp/AIVoiceAnalytics"  workDir="/usr/aivoiceanalytics/work" sessionCookiePath="/">
+  <Resources></Resources>
+</Context>
+  
+ cd /home/fsi
+ index.htmlファイルを転送
+ cd /opt/tomcat/webapps/ROOT
+  mv /home/fsi/index.html /opt/tomcat/webapps/ROOT/.
+ 既存のindex.jspをindexbak.jspにリネームする。
+ mv index.jsp indexbak.jsp
+ 
+ index.html内容
+ <!DOCTYPE html>
+<html lang="en">
+<head>
+<script>
+<!--
+    function index() {
+        window.location.href = "/AIVoiceAnalytics/ui/speech.html";
+    }
+    index();
+-->
+</script>
+</head>
+</html>
+ 
+ 
+ #####################サーバ切替###################################
+ web01:
+ 
+ cat /proc/drbd			⇒Primary/Secondary状態確認
+ crm_mon -r -f -A 		⇒切替グループ名称確認
+ 
+ #各サービスを停止
+ crm resource stop httpd
+ crm resource status httpd
+ crm resource stop tomcat
+ crm resource status tomcat
+ crm resource stop mysqld
+ crm resource status mysqld
+ 
+ #サーバ切替の実行
+ #「move」を実行した後、「crm_mon -rfA」で系の切り替わりを確認したあと「unmigrate」を実行するとよい
+ #両系同時にやってしまうと両系ともActiveになろうとして挙動が安定しないため、片系ずつやる必要があります。
+ #片系で「crm_mon -rfA」で状況を確認しながら、対向サーバをrebootするとやりやすいです。
+ crm resource move group_aivoiceanalytics
+ crm_mon -r -f -A
+ crm resource unmigrate group_aivoiceanalytics
+ crm_mon -r -f -A
+ 
+ web02確認:
+ cat /proc/drbd
+ 
+ #サーバ再起動
+ #サーバが不安定の場合
+ 「reboot」または、「shutdown -r」
+ 
+######################Web02作業一部##################################
+
+  修正ファイル：
+ Tomcat設定
+ cd /opt/tomcat/bin/
+ vi catalina.sh
+ 修正内容：
+ ファイルの一番上のところで下記の内容追加
+ export CATALINA_OPTS="-Xms2048M -Xmx2048M -Xmn512M"
+ 
+ Mysql設定
+ cd /etc/
+ vi my.cnf
+ 修正内容：
+ 
+ [mysqld]
+character-set-server=utf8mb4            ⇒ utf8→utf8mb4
+collation-server = utf8mb4_general_ci   ⇒ utf8→utf8mb4
+lower_case_table_names=1                ⇒0→1
+・・・
+[client]
+default-character-set=utf8mb4           ⇒ utf8→utf8mb4
+
+ MySQL DDL ファイル転送
+ cd /home/fsi
+ schema-create.sqlを転送
+ cd /var
+ cp /home/fsi/schema-create.sql .
+
+ crm resource status mysqld
+ crm resource start mysqld
+ crm resource status mysqld
+ 
+  mysql -u root -p
+ show variables like '%char%';  
+ 
+ 
+ ・新たにスキーマを作成
+ create database ava;
+ use ava;
+ ・DDLファイルを使いテーブルの追加
+ source /var/schema-create.sql
+ describe tbl_t_use_time;
+ 
+ 3．ユーザの追加と権限の設定
+ grant select, insert, update, delete on ava.* to 'ava_user'@'localhost' identified by 'QR9hVQ8#3i';
+ flush privileges;
+ select Host, User from mysql.user;
+ show GRANTS FOR 'ava_user'@'localhost';
+ 
+ DDLファイルの削除
+  rm /var/schema-create.sql
+
+#################20180130日リリース作業#####################
+Web01:
+su
+
+cat /proc/drbd
+cd /home/fsi/work/release/
+mkdir 20180130
+cd 20180130
+
+AIVoiceAnalytics.warファイルを20180130ファオルダに転送
+
+cd /home/fsi/work
+mkdir backup
+cd backup
+mkdir 20180130
+
+mysqldump -u root -p -h localhost ava > /home/fsi/work/backup/20180130/dbdump.sql
+
+crm resource status tomcat
+crm resource stop tomcat
+crm resource status tomcat
+
+cd /usr/aivoiceanalytics/webapp/AIVoiceAnalytics
+mv WEB-INF/lib ../
+rm -rf *
+
+cp /home/fsi/work/release/20180130/AIVoiceAnalytics.war ./
+
+jar cvf AIVoiceAnalytics.war
+
+rm ../AIVoiceAnalytics.war
+mv AIVoiceAnalytics.war ../
+
+mv ../lib WEB-INF/.
+
+crm resource status tomcat
+crm resource start tomcat
+crm resource status tomcat
+
+crm resource status httpd
+crm resource start httpd
+crm resource status httpd
+  
+httpdが上記コマンドで未起動の場合、下記のコマンドを実行
+web01で実行
+crm resource cleanup httpd aivoiceanalyticsweb01
+crm resource start httpd
+crm resource status httpd
+web02で実行
+crm resource cleanup httpd aivoiceanalyticsweb02 
+crm resource start httpd
+crm resource status httpd
+
+#################Web系ファイル（*.html/ *.css/ *.js/ *.png/ fontなど）のリリース作業手順#####################
+
+cd /home/fsi/work/release
+mkdir 20180202
+
+cd /home/fsi/work/backup
+mkdir 20180202
+
+cd /home/fsi/work/release/20180202
+
+リリースファイルを上記のフォルダに転送
+
+su
+
+cd /usr/aivoiceanalytics/AIVoiceAnalytics/WEB-INF
+
+リリース時入り替えファイルをバックアップ
+mv  xxx /home/fsi/work/backup/20180202
+
+差分を取る
+diff -y path/修正前file path/修正後file > /home/fsi/work/backup/20180202/filename.diff
+
+差分を確認
+
+cp /home/fsi/work/release/20180202/filename  /usr/aivoiceanalytics/AIVoiceAnalytics/WEB-INF/filepath
+
+
+画面から修正内容を確認
+https://ai-voice-analytics.optim.cloud/AIVoiceAnalytics
